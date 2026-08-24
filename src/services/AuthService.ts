@@ -1,5 +1,6 @@
 import { Effect } from 'effect'
-import { AuthPayloadSchema, type AuthPayload } from '../domain/auth.schema'
+import { Schema } from '@effect/schema'
+import { AuthPayloadSchema, UserSchema, HouseholdSchema, type AuthPayload } from '../domain/auth.schema'
 import { request, TokenStorage, type ApiError, type NetworkError, type DecodeError } from './ApiClient'
 
 export const AuthService = {
@@ -51,18 +52,20 @@ export const AuthService = {
     localStorage.removeItem('grocery_household')
   },
 
-  getCurrentUser: () => {
+  getCurrentUser: (): { token: string; user: AuthPayload['user']; household: AuthPayload['household'] } | null => {
     const rawUser = localStorage.getItem('grocery_user')
     const rawHousehold = localStorage.getItem('grocery_household')
     const token = TokenStorage.get()
     if (!token || !rawUser || !rawHousehold) return null
     try {
-      return {
-        token,
-        user: JSON.parse(rawUser),
-        household: JSON.parse(rawHousehold)
-      }
+      const user = Schema.decodeUnknownSync(UserSchema)(JSON.parse(rawUser))
+      const household = Schema.decodeUnknownSync(HouseholdSchema)(JSON.parse(rawHousehold))
+      return { token, user, household }
     } catch {
+      // Corrupt storage — clear it
+      TokenStorage.remove()
+      localStorage.removeItem('grocery_user')
+      localStorage.removeItem('grocery_household')
       return null
     }
   }

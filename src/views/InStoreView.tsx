@@ -4,6 +4,7 @@ import { Checkbox } from '../components/ui/Checkbox'
 import { Button } from '../components/ui/Button'
 import { Progress } from '../components/ui/Progress'
 import { QueueService } from '../services/QueueService'
+import { PlanService } from '../services/PlanService'
 import type { PlanItem } from '../domain/plan.schema'
 import { ShoppingCart, CheckCircle2, ArrowLeft, Wifi, WifiOff, RefreshCw } from 'lucide-react'
 
@@ -55,20 +56,17 @@ export const InStoreView: React.FC<InStoreViewProps> = ({
       prev.map((item) => (item.id === itemId ? { ...item, is_checked: nextChecked } : item))
     )
 
-    // 2. Enqueue offline mutation or send online
+    // 2. Enqueue offline mutation or send online via service layer
     if (!navigator.onLine) {
       Effect.runPromise(QueueService.enqueueCheck(planId, itemId, nextChecked))
     } else {
-      fetch(`/api/v1/plans/${planId}/items/${itemId}/check`, {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${localStorage.getItem('grocery_auth_token')}`
-        },
-        body: JSON.stringify({ is_checked: nextChecked })
-      }).catch(() => {
-        Effect.runPromise(QueueService.enqueueCheck(planId, itemId, nextChecked))
-      })
+      const prog = PlanService.checkItem(planId, itemId, nextChecked).pipe(
+        Effect.catchAll(() => {
+          // On failure, enqueue for later sync
+          return QueueService.enqueueCheck(planId, itemId, nextChecked)
+        })
+      )
+      Effect.runPromise(prog)
     }
   }
 
@@ -114,7 +112,7 @@ export const InStoreView: React.FC<InStoreViewProps> = ({
       </div>
 
       {/* Progress Card Sticky Header */}
-      <div className="sticky top-3 z-30 rounded-3xl bg-slate-900 text-white p-5 shadow-xl shadow-slate-900/20 space-y-3">
+      <div className="sticky top-3 z-30 rounded-3xl bg-slate-900 text-white p-5 shadow-xl shadow-slate-900/20 space-y-3" aria-live="polite">
         <div className="flex items-center justify-between">
           <div>
             <span className="text-[11px] font-bold uppercase tracking-wider text-emerald-400">
@@ -159,10 +157,7 @@ export const InStoreView: React.FC<InStoreViewProps> = ({
                 className="flex items-center justify-between rounded-2xl bg-white p-4 shadow-xs border border-slate-100 active:scale-[0.99] transition-all cursor-pointer select-none hover:border-emerald-200"
               >
                 <div className="flex items-center gap-3.5">
-                  <Checkbox
-                    checked={item.is_checked}
-                    onCheckedChange={() => handleToggleCheck(item.id, item.is_checked)}
-                  />
+                  <Checkbox checked={item.is_checked} />
                   <div>
                     <div className="text-sm font-bold text-slate-800">{item.item_name}</div>
                     <div className="text-xs text-slate-400">
@@ -195,10 +190,7 @@ export const InStoreView: React.FC<InStoreViewProps> = ({
                 className="flex items-center justify-between rounded-2xl bg-slate-50/80 p-4 border border-slate-200/60 opacity-60 active:scale-[0.99] transition-all cursor-pointer select-none line-through"
               >
                 <div className="flex items-center gap-3.5">
-                  <Checkbox
-                    checked={item.is_checked}
-                    onCheckedChange={() => handleToggleCheck(item.id, item.is_checked)}
-                  />
+                  <Checkbox checked={item.is_checked} />
                   <div>
                     <div className="text-sm font-bold text-slate-600">{item.item_name}</div>
                     <div className="text-xs text-slate-400">

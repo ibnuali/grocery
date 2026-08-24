@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { Effect } from 'effect'
 import { useAuth } from './hooks/useAuth'
+import { useToast } from './hooks/useToast'
 import { LoginView } from './views/LoginView'
 import { PlanListView } from './views/PlanListView'
 import { PlanDetailView } from './views/PlanDetailView'
@@ -13,6 +14,7 @@ type ActiveView = 'list' | 'detail' | 'instore' | 'reconciliation'
 
 export const AppContent: React.FC = () => {
   const { isAuthenticated, logout, user, household } = useAuth()
+  const { toast } = useToast()
   const [activeView, setActiveView] = useState<ActiveView>('list')
   const [selectedPlanId, setSelectedPlanId] = useState<string | null>(null)
   const [activePlan, setActivePlan] = useState<ShoppingPlan | null>(null)
@@ -23,6 +25,7 @@ export const AppContent: React.FC = () => {
         setActivePlan(plan)
       }),
       Effect.catchAll(() => {
+        toast('Gagal memuat detail rencana', 'error')
         return Effect.succeed(undefined)
       })
     )
@@ -54,7 +57,10 @@ export const AppContent: React.FC = () => {
       Effect.map(() => {
         loadPlanDetails(selectedPlanId)
       }),
-      Effect.catchAll(() => Effect.succeed(undefined))
+      Effect.catchAll(() => {
+        toast('Gagal menambahkan item', 'error')
+        return Effect.succeed(undefined)
+      })
     )
     await Effect.runPromise(prog)
   }
@@ -65,7 +71,10 @@ export const AppContent: React.FC = () => {
       Effect.map(() => {
         loadPlanDetails(selectedPlanId)
       }),
-      Effect.catchAll(() => Effect.succeed(undefined))
+      Effect.catchAll(() => {
+        toast('Gagal menghapus item', 'error')
+        return Effect.succeed(undefined)
+      })
     )
     await Effect.runPromise(prog)
   }

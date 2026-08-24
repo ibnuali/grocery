@@ -9,6 +9,11 @@ import type { PlanItem, ShoppingPlan } from '../domain/plan.schema'
 import type { MasterItem } from '../domain/catalog.schema'
 import { Receipt, Plus, ArrowLeft, TrendingUp, TrendingDown, MinusCircle, Check } from 'lucide-react'
 
+/** UnplannedItemReconcile with a stable key for React list rendering */
+interface UnplannedItemWithKey extends UnplannedItemReconcile {
+  _key: string
+}
+
 export interface ReconciliationViewProps {
   plan: ShoppingPlan
   onSuccess: (updatedPlan: ShoppingPlan) => void
@@ -38,7 +43,7 @@ export const ReconciliationView: React.FC<ReconciliationViewProps> = ({
     return state
   })
 
-  const [unplannedItems, setUnplannedItems] = useState<UnplannedItemReconcile[]>([])
+  const [unplannedItems, setUnplannedItems] = useState<UnplannedItemWithKey[]>([])
   const [isAddUnplannedOpen, setIsAddUnplannedOpen] = useState(false)
   const [unplannedName, setUnplannedName] = useState('')
   const [unplannedCategory, setUnplannedCategory] = useState('General')
@@ -75,6 +80,7 @@ export const ReconciliationView: React.FC<ReconciliationViewProps> = ({
     setUnplannedItems((prev) => [
       ...prev,
       {
+        _key: crypto.randomUUID(),
         item_name: unplannedName.trim(),
         category: unplannedCategory.trim() || 'General',
         qty: Number(unplannedQty) || 1,
@@ -103,7 +109,7 @@ export const ReconciliationView: React.FC<ReconciliationViewProps> = ({
       return acc + Number(item.qty) * (state?.actual_price ?? 0)
     }, 0) ?? 0
 
-  const unplannedActualTotal = unplannedItems.reduce((acc, item) => {
+  const unplannedActualTotal = unplannedItems.reduce((acc: number, item: UnplannedItemWithKey) => {
     return acc + Number(item.qty) * Number(item.actual_price)
   }, 0)
 
@@ -121,12 +127,17 @@ export const ReconciliationView: React.FC<ReconciliationViewProps> = ({
       is_skipped: val.is_skipped
     }))
 
-    const prog = ReconciliationService.reconcile(plan.id, plannedPayload, unplannedItems).pipe(
+    const prog = ReconciliationService.reconcile(
+      plan.id,
+      plannedPayload,
+      unplannedItems.map(({ _key, ...rest }) => rest)
+    ).pipe(
       Effect.map((updatedPlan) => {
         onSuccess(updatedPlan)
       }),
-      Effect.catchAll((err: { message?: string }) => {
-        setError(err.message || 'Gagal menyimpan rekonsiliasi')
+      Effect.catchAll((err) => {
+        const message = err instanceof Error ? err.message : 'Gagal menyimpan rekonsiliasi'
+        setError(message)
         return Effect.succeed(undefined)
       })
     )
@@ -325,9 +336,9 @@ export const ReconciliationView: React.FC<ReconciliationViewProps> = ({
 
         {unplannedItems.length > 0 && (
           <div className="space-y-2">
-            {unplannedItems.map((u, idx) => (
+            {unplannedItems.map((u) => (
               <div
-                key={idx}
+                key={u._key}
                 className="flex items-center justify-between rounded-2xl bg-amber-50/60 p-4 border border-amber-200/70 shadow-xs"
               >
                 <div>
@@ -351,7 +362,7 @@ export const ReconciliationView: React.FC<ReconciliationViewProps> = ({
                   <button
                     type="button"
                     onClick={() =>
-                      setUnplannedItems((prev) => prev.filter((_, i) => i !== idx))
+                      setUnplannedItems((prev) => prev.filter((item) => item._key !== u._key))
                     }
                     className="text-xs font-semibold text-rose-600 hover:underline cursor-pointer"
                   >
@@ -432,7 +443,7 @@ export const ReconciliationView: React.FC<ReconciliationViewProps> = ({
           </div>
 
           <Input
-            label="Harga Satuan Aktual di Struk (Rp)"
+            label="Harga Aktual (Rp)"
             type="number"
             min="0"
             step="any"

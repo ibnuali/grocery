@@ -95,11 +95,11 @@ export const LoginView: React.FC = () => {
             <Input
               label="Password"
               type="password"
-              placeholder="Minimal 4 karakter"
+              placeholder="Minimal 8 karakter"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
-              minLength={4}
+              minLength={8}
             />
           </div>
 

@@ -1,6 +1,7 @@
-import React, { createContext, useContext, useState } from 'react'
+import React, { createContext, useContext, useState, useEffect } from 'react'
 import { Effect } from 'effect'
 import { AuthService } from '../services/AuthService'
+import { setOnUnauthorized } from '../services/ApiClient'
 import type { User, Household } from '../domain/auth.schema'
 
 interface AuthContextType {
@@ -20,6 +21,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [user, setUser] = useState<User | null>(initial?.user ?? null)
   const [household, setHousehold] = useState<Household | null>(initial?.household ?? null)
   const [token, setToken] = useState<string | null>(initial?.token ?? null)
+
+  // Register 401 handler to auto-logout on token expiry
+  useEffect(() => {
+    setOnUnauthorized(() => {
+      AuthService.logout()
+      setUser(null)
+      setHousehold(null)
+      setToken(null)
+    })
+    return () => setOnUnauthorized(null)
+  }, [])
 
   const login = async (username: string, password: string) => {
     const program = AuthService.login(username, password).pipe(

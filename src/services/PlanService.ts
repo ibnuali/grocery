@@ -60,6 +60,16 @@ export const PlanService = {
     request(
       `/api/v1/plans/${planId}/items/${itemId}`,
       { method: 'DELETE' },
-      PlanItemSchema // envelope unwrap
+      PlanItemSchema
+    ),
+
+  checkItem: (planId: string, itemId: string, isChecked: boolean): Effect.Effect<PlanItem, ApiError | NetworkError | DecodeError> =>
+    request(
+      `/api/v1/plans/${planId}/items/${itemId}/check`,
+      {
+        method: 'PATCH',
+        body: JSON.stringify({ is_checked: isChecked })
+      },
+      PlanItemSchema
     )
 }

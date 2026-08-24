@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { Effect } from 'effect'
 import { PlanService } from '../services/PlanService'
+import { useToast } from '../hooks/useToast'
 import { Modal } from '../components/ui/Modal'
 import { Input } from '../components/ui/Input'
 import { Button } from '../components/ui/Button'
@@ -13,6 +14,7 @@ export interface PlanListViewProps {
 }
 
 export const PlanListView: React.FC<PlanListViewProps> = ({ onSelectPlan, onLogout }) => {
+  const { toast } = useToast()
   const [plans, setPlans] = useState<readonly ShoppingPlan[]>([])
   const [loading, setLoading] = useState(true)
   const [isCreateOpen, setIsCreateOpen] = useState(false)
@@ -31,6 +33,7 @@ export const PlanListView: React.FC<PlanListViewProps> = ({ onSelectPlan, onLogo
       Effect.catchAll(() => {
         setPlans([])
         setLoading(false)
+        toast('Gagal memuat daftar rencana', 'error')
         return Effect.succeed(undefined)
       })
     )
@@ -55,6 +58,7 @@ export const PlanListView: React.FC<PlanListViewProps> = ({ onSelectPlan, onLogo
       }),
       Effect.catchAll(() => {
         setCreating(false)
+        toast('Gagal membuat rencana belanja', 'error')
         return Effect.succeed(undefined)
       })
     )

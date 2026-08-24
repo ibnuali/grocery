@@ -23,6 +23,14 @@ export const TokenStorage = {
   set: (token: string) => localStorage.setItem(TOKEN_KEY, token),
   remove: () => localStorage.removeItem(TOKEN_KEY)
 }
+
+/** Callback invoked on 401 responses. Set by useAuth to trigger logout. */
+let onUnauthorized: (() => void) | null = null
+
+export function setOnUnauthorized(handler: (() => void) | null) {
+  onUnauthorized = handler
+}
+
 export function request<A, I>(
   url: string,
   options: RequestInit,
@@ -47,6 +55,18 @@ export function request<A, I>(
         }),
       catch: (err) => new NetworkError({ message: err instanceof Error ? err.message : 'Network error' })
     })
+
+    // Handle 401 Unauthorized — token expired or invalid
+    if (response.status === 401) {
+      onUnauthorized?.()
+      return yield* Effect.fail(
+        new ApiError({
+          code: 'UNAUTHORIZED',
+          message: 'Session expired. Please log in again.',
+          status: 401
+        })
+      )
+    }
 
     const rawJson = yield* Effect.tryPromise({
       try: () => response.json(),
