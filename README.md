@@ -1,32 +1,59 @@
-# React + TypeScript + Vite
+# Grocery Planner
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+Smart grocery shopping planner with budget estimation, in-store checklist, and receipt reconciliation. Built as a PWA for offline-first supermarket use.
 
-Currently, two official plugins are available:
+## Stack
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- **React 19** + TypeScript 6 + Vite 8
+- **Tailwind CSS 4** (via `@tailwindcss/vite`)
+- **Effect** + `@effect/schema` — typed service layer with runtime validation
+- **Base UI** (`@base-ui-components/react`) — accessible dialog, checkbox primitives
+- **IndexedDB** (`idb`) — offline mutation queue for in-store use
+- **vite-plugin-pwa** — service worker, manifest, offline support
 
-## React Compiler
+## Features
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+| View | Purpose |
+|---|---|
+| **Login / Register** | Household-based auth with JWT |
+| **Plan List** | Create and browse monthly shopping plans |
+| **Plan Detail** | Add items from catalog, track budget with visual bar |
+| **In-Store Checklist** | Tap-to-check items with offline queue + online sync |
+| **Reconciliation** | Input actual prices from receipt, track variance vs estimate |
 
-## Expanding the Oxlint configuration
+## Getting Started
 
-If you are developing a production application, we recommend enabling type-aware lint rules by installing `oxlint-tsgolint` and editing `.oxlintrc.json`:
+```bash
+# Install dependencies
+bun install
 
-```json
-{
-  "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "plugins": ["react", "typescript", "oxc"],
-  "options": {
-    "typeAware": true
-  },
-  "rules": {
-    "react/rules-of-hooks": "error",
-    "react/only-export-components": ["warn", { "allowConstantExport": true }]
-  }
-}
+# Dev server (proxies /api to localhost:8080)
+bun run dev
+
+# Production build
+bun run build
+
+# Lint
+bun run lint
 ```
 
-See the [Oxlint rules documentation](https://oxc.rs/docs/guide/usage/linter/rules) for the full list of rules and categories.
+## Project Structure
+
+```
+src/
+├── components/ui/       # Button, Input, Modal, Checkbox, Progress, BudgetBar, ItemAutocomplete
+├── domain/              # Effect schemas (plan, catalog, auth)
+├── hooks/               # useAuth (context + 401 handler), useToast
+├── lib/                 # cn() utility (clsx + tailwind-merge)
+├── services/            # ApiClient, AuthService, PlanService, CatalogService, QueueService, ReconciliationService
+├── views/               # LoginView, PlanListView, PlanDetailView, InStoreView, ReconciliationView
+├── App.tsx              # ErrorBoundary → ToastProvider → AuthProvider → AppContent
+└── main.tsx             # Entry point
+```
+
+## Architecture Notes
+
+- **Service layer**: All API calls go through `ApiClient.request()` which handles auth headers, 401 interception, and schema-validated responses via Effect.
+- **Offline support**: `QueueService` stores check/uncheck mutations in IndexedDB. On reconnect, `flush()` replays them in order.
+- **Error handling**: Render crashes caught by `ErrorBoundary`; API failures surface via `useToast()` notifications.
+- **Auth**: Token stored in localStorage with schema-validated deserialization on load. 401 responses trigger automatic logout.
