@@ -3,6 +3,8 @@ import { Effect } from 'effect'
 import { CatalogService } from '../../services/catalog-service'
 import type { MasterItem } from '../../domain/catalog.schema'
 import { Search, Plus, Tag } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
+import { formatCurrency } from '../../i18n/format'
 
 export interface ItemAutocompleteProps {
   value: string
@@ -14,9 +16,11 @@ export interface ItemAutocompleteProps {
 export const ItemAutocomplete: React.FC<ItemAutocompleteProps> = ({
   value,
   onChange,
-  placeholder = 'Ketik nama barang...',
+  placeholder,
   className = '',
 }) => {
+  const { t } = useTranslation()
+  const resolvedPlaceholder = placeholder ?? t('itemAutocomplete.placeholder')
   const [query, setQuery] = useState(value)
   const [results, setResults] = useState<readonly MasterItem[]>([])
   const [isOpen, setIsOpen] = useState(false)
@@ -85,7 +89,7 @@ const prog = CatalogService.searchItems(query.trim()).pipe(
           value={query}
           onChange={handleInputChange}
           onFocus={() => setIsOpen(true)}
-          placeholder={placeholder}
+          placeholder={resolvedPlaceholder}
           style={{
             width: '100%',
             borderRadius: 'var(--radius-input)',
@@ -120,12 +124,12 @@ const prog = CatalogService.searchItems(query.trim()).pipe(
         >
           {loading ? (
             <div style={{ padding: '0.75rem 1rem', fontSize: 'var(--text-xs)', color: 'var(--color-ink-3)', fontFamily: 'var(--font-body)' }}>
-              Mencari...
+              {t('itemAutocomplete.searching')}
             </div>
           ) : results.length === 0 ? (
             <div style={{ padding: '0.75rem 1rem', display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: 'var(--text-xs)', color: 'var(--color-ink-3)', fontFamily: 'var(--font-body)' }}>
               <Plus style={{ height: '0.875rem', width: '0.875rem' }} />
-              <span>Barang baru: <strong style={{ color: 'var(--color-ink)' }}>{query}</strong></span>
+              <span>{t('itemAutocomplete.newItem')} <strong style={{ color: 'var(--color-ink)' }}>{query}</strong></span>
             </div>
           ) : (
             results.map((item) => (
@@ -162,7 +166,7 @@ const prog = CatalogService.searchItems(query.trim()).pipe(
                 </div>
                 {item.latest_price && (
                   <span style={{ fontWeight: 700, fontFamily: 'var(--font-mono)', fontVariantNumeric: 'tabular-nums', color: 'var(--color-ink-2)' }}>
-                    Rp{Number(item.latest_price).toLocaleString('id-ID')}
+                    {formatCurrency(Number(item.latest_price))}
                   </span>
                 )}
               </button>
@@ -191,7 +195,7 @@ const prog = CatalogService.searchItems(query.trim()).pipe(
               }}
             >
               <Plus style={{ height: '0.875rem', width: '0.875rem' }} />
-              Gunakan "{query.trim()}" sebagai barang baru
+              {t('itemAutocomplete.useAsNew', { query: query.trim() })}
             </button>
           )}
         </div>

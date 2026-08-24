@@ -1,4 +1,5 @@
 import React from 'react'
+import i18n from '../i18n'
 
 interface ErrorBoundaryProps {
   children: React.ReactNode
@@ -35,9 +36,9 @@ export class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoun
                 <line x1="12" y1="16" x2="12.01" y2="16" />
               </svg>
             </div>
-            <h1 className="text-xl font-bold text-foreground">Terjadi Kesalahan</h1>
+            <h1 className="text-xl font-bold text-foreground">{i18n.t('errorBoundary.title')}</h1>
             <p className="text-sm text-muted-foreground">
-              Aplikasi mengalami error tak terduga. Silakan coba lagi.
+              {i18n.t('errorBoundary.description')}
             </p>
             {this.state.error && (
               <pre className="text-xs text-left bg-muted rounded-xl p-3 text-muted-foreground overflow-auto max-h-32">
@@ -49,7 +50,7 @@ export class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoun
               onClick={this.handleReset}
               className="inline-flex items-center justify-center px-5 py-2.5 text-sm font-medium rounded-xl bg-emerald-600 text-white hover:bg-emerald-700 transition-colors"
             >
-              Coba Lagi
+              {i18n.t('errorBoundary.retry')}
             </button>
           </div>
         </div>

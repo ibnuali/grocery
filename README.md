@@ -9,7 +9,7 @@ Smart grocery shopping planner with budget estimation, in-store checklist, and r
 - **Effect** + `@effect/schema` — typed service layer with runtime validation
 - **Base UI** (`@base-ui-components/react`) — accessible dialog, checkbox primitives
 - **IndexedDB** (`idb`) — offline mutation queue for in-store use
-- **vite-plugin-pwa** — service worker, manifest, offline support
+- **react-i18next** — internationalization (ID/EN), locale JSON files, pluralization
 
 ## Features
 
@@ -43,7 +43,7 @@ bun run lint
 src/
 ├── components/ui/       # button, input, modal, checkbox, progress, budget-bar, item-autocomplete
 ├── domain/              # Effect schemas (plan, catalog, auth)
-├── hooks/               # use-auth (context + 401 handler), use-toast
+├── i18n/                # i18next init, locales (id.json, en.json), format helpers
 ├── lib/                 # cn() utility (clsx + tailwind-merge)
 ├── services/            # api-client, auth-service, plan-service, catalog-service, queue-service, reconciliation-service
 ├── views/               # login-view, plan-list-view, plan-detail-view, in-store-view, reconciliation-view
@@ -56,4 +56,4 @@ src/
 - **Service layer**: All API calls go through `api-client.request()` which handles auth headers, 401 interception, and schema-validated responses via Effect.
 - **Offline support**: `queue-service` stores check/uncheck mutations in IndexedDB. On reconnect, `flush()` replays them in order.
 - **Error handling**: Render crashes caught by `error-boundary`; API failures surface via `use-toast()` notifications.
-- **Auth**: Token stored in localStorage with schema-validated deserialization on load. 401 responses trigger automatic logout.
+- **i18n**: All UI strings externalized to `src/i18n/locales/`. Default language is Indonesian. Language toggle in header and login page. Currency formatting via `formatCurrency()` helper.

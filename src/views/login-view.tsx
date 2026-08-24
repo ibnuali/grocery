@@ -3,9 +3,12 @@ import { useAuth } from '../hooks/use-auth'
 import { Input } from '../components/ui/input'
 import { Button } from '../components/ui/button'
 import { ShoppingCart, AlertCircle } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
+import { LanguageToggle } from '../components/language-toggle'
 
 export const LoginView: React.FC = () => {
   const { login, register } = useAuth()
+  const { t } = useTranslation()
   const [isRegister, setIsRegister] = useState(false)
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
@@ -20,10 +23,10 @@ export const LoginView: React.FC = () => {
     setLoading(true)
     if (isRegister) {
       const res = await register(username, password, fullName, householdName)
-      if (!res.success) setError(res.error || 'Registration failed')
+      if (!res.success) setError(res.error || t('login.register'))
     } else {
       const res = await login(username, password)
-      if (!res.success) setError(res.error || 'Invalid username or password')
+      if (!res.success) setError(res.error || t('login.errorLogin'))
     }
     setLoading(false)
   }
@@ -32,15 +35,18 @@ export const LoginView: React.FC = () => {
     <div style={{ display: 'flex', minHeight: '100vh', alignItems: 'center', justifyContent: 'center', padding: '1rem', background: 'var(--color-paper)' }}>
       <div style={{ position: 'fixed', top: '-20%', right: '-10%', width: '40vw', height: '40vw', borderRadius: '50%', background: 'oklch(86% 0.18 95 / 0.15)', filter: 'blur(80px)', pointerEvents: 'none' }} />
       <div style={{ width: '100%', maxWidth: '26rem', borderRadius: 'var(--radius-card)', background: 'var(--color-paper)', padding: 'clamp(1.5rem, 5vw, 2.5rem)', boxShadow: '0 24px 64px -16px oklch(20% 0.012 250 / 0.12)', border: '1.5px solid var(--color-rule)', position: 'relative' }}>
+        <div style={{ position: 'absolute', top: '0.75rem', right: '0.75rem' }}>
+          <LanguageToggle />
+        </div>
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center' }}>
           <div style={{ display: 'flex', height: '3.5rem', width: '3.5rem', alignItems: 'center', justifyContent: 'center', borderRadius: '16px', background: 'var(--color-accent)', color: 'var(--color-ink)', boxShadow: '0 4px 0 0 var(--color-accent-deep), 0 8px 20px -6px oklch(86% 0.18 95 / 0.5)', marginBottom: '1rem' }}>
             <ShoppingCart style={{ height: '1.75rem', width: '1.75rem' }} />
           </div>
           <h1 style={{ fontSize: 'var(--text-xl)', fontWeight: 700, letterSpacing: '-0.025em', color: 'var(--color-ink)', fontFamily: 'var(--font-display)', lineHeight: 1.2 }}>
-            {isRegister ? 'Buat Akun Baru' : 'Grocery Planner'}
+            {isRegister ? t('login.createAccount') : t('login.title')}
           </h1>
           <p style={{ marginTop: '0.375rem', fontSize: 'var(--text-xs)', color: 'var(--color-ink-3)', maxWidth: '20rem', fontFamily: 'var(--font-body)', lineHeight: 1.5 }}>
-            {isRegister ? 'Mulai rencanakan belanja bulanan keluarga dengan estimasi akurat' : 'Masuk untuk mengelola rencana belanja dan melacak riwayat harga'}
+            {isRegister ? t('login.subtitleRegister') : t('login.subtitleLogin')}
           </p>
         </div>
         {error && (
@@ -52,19 +58,19 @@ export const LoginView: React.FC = () => {
         <form onSubmit={handleSubmit} style={{ marginTop: '1.5rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
           {isRegister && (
             <>
-              <Input label="Nama Lengkap" placeholder="Contoh: Budi Santoso" value={fullName} onChange={(e) => setFullName(e.target.value)} required />
-              <Input label="Nama Keluarga / Household" placeholder="Contoh: Keluarga Santoso" value={householdName} onChange={(e) => setHouseholdName(e.target.value)} />
+              <Input label={t('login.fullName')} placeholder={t('login.fullNamePlaceholder')} value={fullName} onChange={(e) => setFullName(e.target.value)} required />
+              <Input label={t('login.household')} placeholder={t('login.householdPlaceholder')} value={householdName} onChange={(e) => setHouseholdName(e.target.value)} />
             </>
           )}
-          <Input label="Username" placeholder="Username anda" value={username} onChange={(e) => setUsername(e.target.value)} required minLength={3} />
-          <Input label="Password" type="password" placeholder="Minimal 8 karakter" value={password} onChange={(e) => setPassword(e.target.value)} required minLength={8} />
+          <Input label={t('login.username')} placeholder={t('login.usernamePlaceholder')} value={username} onChange={(e) => setUsername(e.target.value)} required minLength={3} />
+          <Input label={t('login.password')} type="password" placeholder={t('login.passwordPlaceholder')} value={password} onChange={(e) => setPassword(e.target.value)} required minLength={8} />
           <Button type="submit" size="lg" disabled={loading} style={{ width: '100%', marginTop: '0.5rem' }}>
-            {loading ? 'Memproses...' : isRegister ? 'Daftar Sekarang' : 'Masuk ke Aplikasi'}
+            {loading ? t('common.submitting') : isRegister ? t('login.registerButton') : t('login.loginButton')}
           </Button>
         </form>
         <div style={{ marginTop: '1.5rem', paddingTop: '1.25rem', borderTop: '1.5px solid var(--color-rule)', textAlign: 'center' }}>
           <button type="button" onClick={() => { setIsRegister(!isRegister); setError(null) }} style={{ fontSize: 'var(--text-xs)', color: 'var(--color-accent-2)', fontWeight: 600, background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'var(--font-body)' }}>
-            {isRegister ? 'Sudah punya akun? Masuk' : 'Belum punya akun? Daftar'}
+            {isRegister ? t('login.switchToLogin') : t('login.switchToRegister')}
           </button>
         </div>
       </div>

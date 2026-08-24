@@ -7,6 +7,8 @@ import { ItemAutocomplete } from '../components/ui/item-autocomplete'
 import { Plus, Trash2, Calendar, ShoppingBag, ArrowRight } from 'lucide-react'
 import type { MasterItem } from '../domain/catalog.schema'
 import type { PlanItem } from '../domain/plan.schema'
+import { useTranslation } from 'react-i18next'
+import { formatCurrency } from '../i18n/format'
 
 export interface PlanDetailViewProps {
   planTitle: string; shoppingDate: string; budgetTarget: number; items: readonly PlanItem[]
@@ -15,6 +17,7 @@ export interface PlanDetailViewProps {
 }
 
 export const PlanDetailView: React.FC<PlanDetailViewProps> = ({ planTitle, shoppingDate, budgetTarget, items, onAddItem, onDeleteItem, onStartShopping, onReconcile, onBack }) => {
+  const { t } = useTranslation()
   const [isAddOpen, setIsAddOpen] = useState(false)
   const [itemName, setItemName] = useState('')
   const [category, setCategory] = useState('General')
@@ -47,7 +50,7 @@ export const PlanDetailView: React.FC<PlanDetailViewProps> = ({ planTitle, shopp
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.5rem' }}>
         <button type="button" onClick={onBack} style={{ fontSize: 'var(--text-xs)', fontWeight: 600, color: 'var(--color-ink-3)', background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'var(--font-body)', transition: 'color 180ms' }}
           onMouseEnter={(e) => { e.currentTarget.style.color = 'var(--color-ink)' }} onMouseLeave={(e) => { e.currentTarget.style.color = 'var(--color-ink-3)' }}>
-          ← Kembali ke Daftar
+          {t('planDetail.backToList')}
         </button>
         <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.375rem', fontSize: 'var(--text-xs)', color: 'var(--color-ink-3)', fontFamily: 'var(--font-body)' }}>
           <Calendar style={{ height: '0.875rem', width: '0.875rem' }} />{shoppingDate}
@@ -58,37 +61,37 @@ export const PlanDetailView: React.FC<PlanDetailViewProps> = ({ planTitle, shopp
         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
           <div>
             <h1 style={{ fontSize: 'var(--text-xl)', fontWeight: 700, color: 'var(--color-ink)', fontFamily: 'var(--font-display)', letterSpacing: '-0.025em' }}>{planTitle}</h1>
-            <p style={{ fontSize: 'var(--text-xs)', color: 'var(--color-ink-3)', marginTop: '0.25rem', fontFamily: 'var(--font-body)' }}>Target Anggaran: <span style={{ fontWeight: 600, color: 'var(--color-ink)', fontFamily: 'var(--font-mono)', fontVariantNumeric: 'tabular-nums' }}>Rp{budgetTarget.toLocaleString('id-ID')}</span></p>
+            <p style={{ fontSize: 'var(--text-xs)', color: 'var(--color-ink-3)', marginTop: '0.25rem', fontFamily: 'var(--font-body)' }}>{t('planDetail.budgetTarget')} <span style={{ fontWeight: 600, color: 'var(--color-ink)', fontFamily: 'var(--font-mono)', fontVariantNumeric: 'tabular-nums' }}>{formatCurrency(budgetTarget)}</span></p>
           </div>
           <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
-            <Button variant="outline" size="sm" onClick={onReconcile}>Rekonsiliasi Struk</Button>
-            <Button size="sm" onClick={onStartShopping}><span>Mulai Belanja</span><ArrowRight style={{ height: '0.875rem', width: '0.875rem' }} /></Button>
+            <Button variant="outline" size="sm" onClick={onReconcile}>{t('planDetail.reconcile')}</Button>
+            <Button size="sm" onClick={onStartShopping}><span>{t('planDetail.startShopping')}</span><ArrowRight style={{ height: '0.875rem', width: '0.875rem' }} /></Button>
           </div>
         </div>
         <BudgetBar totalEstimated={totalEstimated} budgetTarget={budgetTarget} />
         <div style={{ borderRadius: '14px', background: 'oklch(86% 0.18 95 / 0.12)', padding: '1rem', border: '1.5px solid oklch(86% 0.18 95 / 0.25)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <div>
-            <div style={{ fontSize: 'var(--text-xs)', color: 'var(--color-accent-deep)', fontWeight: 500, fontFamily: 'var(--font-body)' }}>Estimasi Total Belanja</div>
-            <div style={{ fontSize: 'var(--text-xl)', fontWeight: 800, color: 'var(--color-accent-deep)', fontFamily: 'var(--font-mono)', fontVariantNumeric: 'tabular-nums' }}>Rp{totalEstimated.toLocaleString('id-ID')}</div>
+            <div style={{ fontSize: 'var(--text-xs)', color: 'var(--color-accent-deep)', fontWeight: 500, fontFamily: 'var(--font-body)' }}>{t('planDetail.totalEstimate')}</div>
+            <div style={{ fontSize: 'var(--text-xl)', fontWeight: 800, color: 'var(--color-accent-deep)', fontFamily: 'var(--font-mono)', fontVariantNumeric: 'tabular-nums' }}>{formatCurrency(totalEstimated)}</div>
           </div>
           <div style={{ textAlign: 'right' }}>
-            <div style={{ fontSize: 'var(--text-xs)', color: 'var(--color-ink-3)', fontFamily: 'var(--font-body)' }}>Jumlah Item</div>
-            <div style={{ fontSize: 'var(--text-base)', fontWeight: 700, color: 'var(--color-ink)', fontFamily: 'var(--font-display)' }}>{items.length} item</div>
+            <div style={{ fontSize: 'var(--text-xs)', color: 'var(--color-ink-3)', fontFamily: 'var(--font-body)' }}>{t('planDetail.itemCount', { count: items.length })}</div>
+            <div style={{ fontSize: 'var(--text-base)', fontWeight: 700, color: 'var(--color-ink)', fontFamily: 'var(--font-display)' }}>{t('planDetail.itemCount', { count: items.length })}</div>
           </div>
         </div>
       </div>
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <h2 style={{ fontSize: 'var(--text-sm)', fontWeight: 700, color: 'var(--color-ink)', fontFamily: 'var(--font-display)' }}>Daftar Barang ({items.length})</h2>
-          <Button size="sm" onClick={() => setIsAddOpen(true)}><Plus style={{ height: '1rem', width: '1rem' }} /><span>Tambah Item</span></Button>
+          <h2 style={{ fontSize: 'var(--text-sm)', fontWeight: 700, color: 'var(--color-ink)', fontFamily: 'var(--font-display)' }}>{t('planDetail.itemList')} ({items.length})</h2>
+          <Button size="sm" onClick={() => setIsAddOpen(true)}><Plus style={{ height: '1rem', width: '1rem' }} /><span>{t('common.addItem')}</span></Button>
         </div>
         {items.length === 0 ? (
           <div style={{ borderRadius: 'var(--radius-card)', border: '2px dashed var(--color-rule)', background: 'var(--color-paper)', padding: '2rem', textAlign: 'center' }}>
             <ShoppingBag style={{ margin: '0 auto 0.5rem', height: '2rem', width: '2rem', color: 'var(--color-ink-3)' }} />
-            <p style={{ fontSize: 'var(--text-sm)', fontWeight: 600, color: 'var(--color-ink)', fontFamily: 'var(--font-body)' }}>Belum ada barang di daftar</p>
-            <p style={{ fontSize: 'var(--text-xs)', color: 'var(--color-ink-3)', marginTop: '0.25rem', fontFamily: 'var(--font-body)', lineHeight: 1.5 }}>Tambahkan barang pertama untuk mulai menghitung estimasi belanja otomatis</p>
-            <Button variant="outline" size="sm" onClick={() => setIsAddOpen(true)} style={{ marginTop: '1rem' }}><Plus style={{ height: '1rem', width: '1rem' }} /><span>Tambah Barang Sekarang</span></Button>
+            <p style={{ fontSize: 'var(--text-sm)', fontWeight: 600, color: 'var(--color-ink)', fontFamily: 'var(--font-body)' }}>{t('planDetail.emptyTitle')}</p>
+            <p style={{ fontSize: 'var(--text-xs)', color: 'var(--color-ink-3)', marginTop: '0.25rem', fontFamily: 'var(--font-body)', lineHeight: 1.5 }}>{t('planDetail.emptyDesc')}</p>
+            <Button variant="outline" size="sm" onClick={() => setIsAddOpen(true)} style={{ marginTop: '1rem' }}><Plus style={{ height: '1rem', width: '1rem' }} /><span>{t('planDetail.addFirstItem')}</span></Button>
           </div>
         ) : (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
@@ -98,12 +101,12 @@ export const PlanDetailView: React.FC<PlanDetailViewProps> = ({ planTitle, shopp
                 <div key={item.id} style={itemRow} onMouseEnter={(e) => { e.currentTarget.style.borderColor = 'var(--color-accent-2)' }} onMouseLeave={(e) => { e.currentTarget.style.borderColor = 'var(--color-rule)' }}>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '0.125rem' }}>
                     <div style={{ fontSize: 'var(--text-sm)', fontWeight: 700, color: 'var(--color-ink)', fontFamily: 'var(--font-body)' }}>{item.item_name}</div>
-                    <div style={{ fontSize: 'var(--text-xs)', color: 'var(--color-ink-3)', fontFamily: 'var(--font-mono)', fontVariantNumeric: 'tabular-nums' }}>{Number(item.qty)} {item.unit} × Rp{Number(item.estimated_price).toLocaleString('id-ID')}</div>
+                    <div style={{ fontSize: 'var(--text-xs)', color: 'var(--color-ink-3)', fontFamily: 'var(--font-mono)', fontVariantNumeric: 'tabular-nums' }}>{Number(item.qty)} {item.unit} × {formatCurrency(Number(item.estimated_price))}</div>
                   </div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
                     <div style={{ textAlign: 'right' }}>
-                      <div style={{ fontSize: 'var(--text-sm)', fontWeight: 800, color: 'var(--color-ink)', fontFamily: 'var(--font-mono)', fontVariantNumeric: 'tabular-nums' }}>Rp{subtotal.toLocaleString('id-ID')}</div>
-                      <div style={{ fontSize: '0.625rem', color: 'var(--color-ink-3)', fontFamily: 'var(--font-body)' }}>subtotal</div>
+                      <div style={{ fontSize: 'var(--text-sm)', fontWeight: 800, color: 'var(--color-ink)', fontFamily: 'var(--font-mono)', fontVariantNumeric: 'tabular-nums' }}>{formatCurrency(subtotal)}</div>
+                      <div style={{ fontSize: '0.625rem', color: 'var(--color-ink-3)', fontFamily: 'var(--font-body)' }}>{t('common.subtotal')}</div>
                     </div>
                     <button type="button" onClick={() => onDeleteItem(item.id)} style={{ padding: '0.375rem', color: 'var(--color-ink-3)', borderRadius: '8px', border: 'none', background: 'transparent', cursor: 'pointer', transition: 'color 180ms, background 180ms' }}
                       onMouseEnter={(e) => { e.currentTarget.style.color = 'var(--color-accent-3)'; e.currentTarget.style.background = 'oklch(68% 0.24 18 / 0.08)' }}
@@ -118,24 +121,24 @@ export const PlanDetailView: React.FC<PlanDetailViewProps> = ({ planTitle, shopp
         )}
       </div>
 
-      <Modal open={isAddOpen} onOpenChange={setIsAddOpen} title="Tambah Barang Belanja" description="Pilih dari katalog atau ketik nama barang baru">
+      <Modal open={isAddOpen} onOpenChange={setIsAddOpen} title={t('planDetail.modalTitle')} description={t('planDetail.modalDesc')}>
         <form onSubmit={handleFormSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.375rem' }}>
-            <label style={{ fontSize: 'var(--text-xs)', fontWeight: 600, color: 'var(--color-ink-2)', fontFamily: 'var(--font-body)' }}>Nama Barang</label>
+            <label style={{ fontSize: 'var(--text-xs)', fontWeight: 600, color: 'var(--color-ink-2)', fontFamily: 'var(--font-body)' }}>{t('common.itemName')}</label>
             <ItemAutocomplete value={itemName} onChange={handleAutocompleteChange} />
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
-            <Input label="Jumlah (Qty)" type="number" min="0.1" step="any" value={qty} onChange={(e) => setQty(e.target.value)} required />
-            <Input label="Satuan (Unit)" placeholder="pcs, kg, btl" value={unit} onChange={(e) => setUnit(e.target.value)} required />
+            <Input label={t('planDetail.qtyLabel')} type="number" min="0.1" step="any" value={qty} onChange={(e) => setQty(e.target.value)} required />
+            <Input label={t('planDetail.unitLabel')} placeholder={t('planDetail.unitPlaceholder')} value={unit} onChange={(e) => setUnit(e.target.value)} required />
           </div>
-          <Input label="Estimasi Harga Satuan (Rp)" type="number" min="0" step="any" value={estimatedPrice} onChange={(e) => setEstimatedPrice(e.target.value)} required />
+          <Input label={t('planDetail.priceLabel')} type="number" min="0" step="any" value={estimatedPrice} onChange={(e) => setEstimatedPrice(e.target.value)} required />
           <div style={{ borderRadius: 'var(--radius-input)', background: 'var(--color-paper-2)', padding: '0.75rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: 'var(--text-xs)', fontFamily: 'var(--font-body)' }}>
-            <span style={{ color: 'var(--color-ink-3)', fontWeight: 500 }}>Subtotal Estimasi:</span>
-            <span style={{ fontWeight: 700, color: 'var(--color-ink)', fontSize: 'var(--text-sm)', fontFamily: 'var(--font-mono)', fontVariantNumeric: 'tabular-nums' }}>Rp{(Number(qty) * Number(estimatedPrice)).toLocaleString('id-ID')}</span>
+            <span style={{ color: 'var(--color-ink-3)', fontWeight: 500 }}>{t('planDetail.subtotalEstimate')}</span>
+            <span style={{ fontWeight: 700, color: 'var(--color-ink)', fontSize: 'var(--text-sm)', fontFamily: 'var(--font-mono)', fontVariantNumeric: 'tabular-nums' }}>{formatCurrency(Number(qty) * Number(estimatedPrice))}</span>
           </div>
           <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.5rem', paddingTop: '0.5rem' }}>
-            <Button type="button" variant="outline" size="sm" onClick={() => setIsAddOpen(false)}>Batal</Button>
-            <Button type="submit" size="sm" disabled={submitting}>{submitting ? 'Menyimpan...' : 'Tambahkan ke Daftar'}</Button>
+            <Button type="button" variant="outline" size="sm" onClick={() => setIsAddOpen(false)}>{t('common.cancel')}</Button>
+            <Button type="submit" size="sm" disabled={submitting}>{submitting ? t('common.saving') : t('planDetail.addButton')}</Button>
           </div>
         </form>
       </Modal>

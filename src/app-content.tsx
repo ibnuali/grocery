@@ -2,7 +2,9 @@ import React, { useState } from 'react'
 import { Effect } from 'effect'
 import { useAuth } from './hooks/use-auth'
 import { useToast } from './hooks/use-toast'
+import { useTranslation } from 'react-i18next'
 import { ThemeToggle } from './components/theme-toggle'
+import { LanguageToggle } from './components/language-toggle'
 import { LoginView } from './views/login-view'
 import { PlanListView } from './views/plan-list-view'
 import { PlanDetailView } from './views/plan-detail-view'
@@ -16,6 +18,7 @@ type ActiveView = 'list' | 'detail' | 'instore' | 'reconciliation'
 export const AppContent: React.FC = () => {
   const { isAuthenticated, logout, user, household } = useAuth()
   const { toast } = useToast()
+  const { t } = useTranslation()
   const [activeView, setActiveView] = useState<ActiveView>('list')
   const [selectedPlanId, setSelectedPlanId] = useState<string | null>(null)
   const [activePlan, setActivePlan] = useState<ShoppingPlan | null>(null)
@@ -23,7 +26,7 @@ export const AppContent: React.FC = () => {
   const loadPlanDetails = async (planId: string) => {
     const prog = PlanService.getPlan(planId).pipe(
       Effect.map((plan) => { setActivePlan(plan) }),
-      Effect.catchAll(() => { toast('Gagal memuat detail rencana', 'error'); return Effect.succeed(undefined) })
+      Effect.catchAll(() => { toast(t('planDetail.errorLoad'), 'error'); return Effect.succeed(undefined) })
     )
     await Effect.runPromise(prog)
   }
@@ -38,7 +41,7 @@ export const AppContent: React.FC = () => {
     if (!selectedPlanId) return
     const prog = PlanService.addItem(selectedPlanId, item.itemName, item.qty, item.unit, item.estimatedPrice, item.category).pipe(
       Effect.map(() => { loadPlanDetails(selectedPlanId) }),
-      Effect.catchAll(() => { toast('Gagal menambahkan item', 'error'); return Effect.succeed(undefined) })
+      Effect.catchAll(() => { toast(t('planDetail.errorAdd'), 'error'); return Effect.succeed(undefined) })
     )
     await Effect.runPromise(prog)
   }
@@ -47,7 +50,7 @@ export const AppContent: React.FC = () => {
     if (!selectedPlanId) return
     const prog = PlanService.deleteItem(selectedPlanId, itemId).pipe(
       Effect.map(() => { loadPlanDetails(selectedPlanId) }),
-      Effect.catchAll(() => { toast('Gagal menghapus item', 'error'); return Effect.succeed(undefined) })
+      Effect.catchAll(() => { toast(t('planDetail.errorDelete'), 'error'); return Effect.succeed(undefined) })
     )
     await Effect.runPromise(prog)
   }
@@ -73,6 +76,7 @@ export const AppContent: React.FC = () => {
               <span>{household?.name}</span>
             </div>
             <ThemeToggle />
+            <LanguageToggle />
           </div>
         </div>
       </header>

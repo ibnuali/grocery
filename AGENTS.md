@@ -36,7 +36,7 @@ main.tsx → app.tsx (ErrorBoundary → ToastProvider → AuthProvider) → app-
 | `src/components/ui/` | Reusable primitives: button, input, modal, checkbox, progress, budget-bar, item-autocomplete |
 | `src/services/` | API boundary (api-client), auth-service, plan-service, catalog-service, queue-service, reconciliation-service |
 | `src/domain/` | Effect schemas: `auth.schema.ts`, `plan.schema.ts`, `catalog.schema.ts` |
-| `src/hooks/` | `use-auth` (context + 401 handler), `use-toast` (transient notifications) |
+| `src/i18n/` | i18next init, locale JSON files (`id.json`, `en.json`), `formatCurrency`/`formatNumber` helpers |
 | `src/lib/` | `cn()` — clsx + tailwind-merge |
 | `src/assets/` | Static images (hero.png, vite.svg, react.svg) |
 | `public/` | favicon.svg, icons.svg |
@@ -96,11 +96,14 @@ await Effect.runPromise(prog)
 - Base UI (`@base-ui/react`) for accessible dialog/checkbox primitives
 - Controlled components throughout (no uncontrolled forms)
 
-### TypeScript
-- `verbatimModuleSyntax` enforced — use `import type` for type-only imports
-- `noUnusedLocals` + `noUnusedParameters` enforced
-- `erasableSyntaxOnly` — no `enum`, no `namespace`
-- No path aliases — relative imports only (`../services/plan-service`)
+### i18n
+- **Library**: react-i18next with JSON locale files (`src/i18n/locales/id.json`, `en.json`)
+- **Default language**: Indonesian (`id`), fallback also `id`
+- **Usage**: `const { t } = useTranslation()` in function components, `i18n.t()` in class components
+- **Currency**: always use `formatCurrency(amount)` from `src/i18n/format.ts` — never raw `toLocaleString`
+- **Pluralization**: CLDR rules via `_one`/`_other` suffixes in `en.json`; Indonesian has only 1 form
+- **Persistence**: `localStorage.getItem('grocery_lang')` — same pattern as theme
+- **Toggle**: `LanguageToggle` component in header bar and login page
 
 ## Important Files
 
@@ -111,7 +114,9 @@ await Effect.runPromise(prog)
 | `src/app-content.tsx` | Authenticated shell + manual router + plan state coordination |
 | `src/services/api-client.ts` | Centralized HTTP boundary with Effect, schema decode, 401 handling |
 | `src/domain/*.schema.ts` | Runtime-validated types for all API payloads |
-| `src/hooks/use-auth.tsx` | Auth context, login/register/logout, 401 auto-logout wiring |
+| `src/i18n/index.ts` | i18next initialization + react-i18next plugin |
+| `src/i18n/format.ts` | `formatCurrency()` and `formatNumber()` helpers (locale-aware) |
+| `src/components/language-toggle.tsx` | ID/EN language switcher (Globe icon) |
 | `vite.config.ts` | React + Tailwind + PWA plugins; /api proxy to :8080 |
 | `tsconfig.app.json` | Application TypeScript config (ES2023, bundler, strict hygiene) |
 | `.oxlintrc.json` | Lint rules: react hooks error, only-export-components warn |
