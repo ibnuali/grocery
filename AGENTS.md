@@ -7,36 +7,36 @@ Grocery Planner — a PWA for household grocery shopping with budget estimation,
 ## Architecture & Data Flow
 
 ```
-main.tsx → App.tsx (ErrorBoundary → ToastProvider → AuthProvider) → AppContent.tsx
+main.tsx → app.tsx (ErrorBoundary → ToastProvider → AuthProvider) → app-content.tsx
                                                                         │
                                                           ┌─────────────┼─────────────┐
                                                           ▼             ▼             ▼
-                                                     PlanListView  PlanDetailView  InStoreView
+                                                     plan-list-view  plan-detail-view  in-store-view
                                                           │             │             │
                                                           ▼             ▼             ▼
-                                                     PlanService   CatalogService  QueueService (IndexedDB)
+                                                     plan-service   catalog-service  queue-service (IndexedDB)
                                                           │             │
                                                           ▼             ▼
-                                                     ApiClient.ts ← Effect.gen + @effect/schema decode
+                                                     api-client.ts ← Effect.gen + @effect/schema decode
                                                           │
                                                           ▼
                                                      fetch() → /api/v1/* → Go backend (:8080)
 ```
 
-- **Manual routing** via `useState<ActiveView>` in `AppContent.tsx` — no react-router.
-- **Service layer**: every API call goes through `ApiClient.request()` which attaches JWT, decodes the response envelope with `@effect/schema`, and handles 401/network/decode errors as typed Effect failures.
-- **Offline**: `QueueService` stores check/uncheck mutations in IndexedDB; replays on reconnect via `online` event.
+- **Manual routing** via `useState<ActiveView>` in `app-content.tsx` — no react-router.
+- **Service layer**: every API call goes through `api-client.request()` which attaches JWT, decodes the response envelope with `@effect/schema`, and handles 401/network/decode errors as typed Effect failures.
+- **Offline**: `queue-service` stores check/uncheck mutations in IndexedDB; replays on reconnect via `online` event.
 - **Auth**: token + user + household stored in localStorage; schema-validated on load; 401 triggers auto-logout via registered callback.
 
 ## Key Directories
 
 | Directory | Purpose |
 |---|---|
-| `src/views/` | 5 route-level views: Login, PlanList, PlanDetail, InStore, Reconciliation |
-| `src/components/ui/` | Reusable primitives: Button, Input, Modal, Checkbox, Progress, BudgetBar, ItemAutocomplete |
-| `src/services/` | API boundary (ApiClient), AuthService, PlanService, CatalogService, QueueService, ReconciliationService |
+| `src/views/` | 5 route-level views: login-view, plan-list-view, plan-detail-view, in-store-view, reconciliation-view |
+| `src/components/ui/` | Reusable primitives: button, input, modal, checkbox, progress, budget-bar, item-autocomplete |
+| `src/services/` | API boundary (api-client), auth-service, plan-service, catalog-service, queue-service, reconciliation-service |
 | `src/domain/` | Effect schemas: `auth.schema.ts`, `plan.schema.ts`, `catalog.schema.ts` |
-| `src/hooks/` | `useAuth` (context + 401 handler), `useToast` (transient notifications) |
+| `src/hooks/` | `use-auth` (context + 401 handler), `use-toast` (transient notifications) |
 | `src/lib/` | `cn()` — clsx + tailwind-merge |
 | `src/assets/` | Static images (hero.png, vite.svg, react.svg) |
 | `public/` | favicon.svg, icons.svg |
@@ -56,8 +56,8 @@ No test runner, CI pipeline, or pre-commit hooks configured.
 ## Code Conventions & Common Patterns
 
 ### Naming
-- **Files**: PascalCase for components/views (`PlanListView.tsx`), camelCase for services/hooks/utils (`PlanService.ts`, `useAuth.tsx`)
-- **Exports**: named exports for components/services (`export const PlanListView`), default export only for `App.tsx`
+- **Files**: kebab-case for all source files (`plan-list-view.tsx`, `plan-service.ts`, `use-auth.tsx`)
+- **Exports**: named exports for components/services (`export const PlanListView`), default export only for `app.tsx`
 - **Types**: Effect schemas define runtime types (`PlanItemSchema` → `type PlanItem`); no separate `.d.ts` files
 - **CSS classes**: Tailwind utility-first; use `cn()` from `src/lib/utils.ts` for conditional/merged classes
 
@@ -81,37 +81,37 @@ await Effect.runPromise(prog)
 ```
 
 ### Error Handling
-- **Render crashes**: `ErrorBoundary` (class component) wraps the app
-- **API failures**: `useToast()` for transient user notifications (auto-dismiss 4s)
-- **401 responses**: `ApiClient` calls registered `onUnauthorized` → auto-logout
+- **Render crashes**: `error-boundary` (class component) wraps the app
+- **API failures**: `use-toast()` for transient user notifications (auto-dismiss 4s)
+- **401 responses**: `api-client` calls registered `onUnauthorized` → auto-logout
 - **Offline mutations**: queued in IndexedDB, replayed on reconnect
 
 ### State Management
-- React Context for auth (`useAuth`) and toasts (`useToast`)
+- React Context for auth (`use-auth`) and toasts (`use-toast`)
 - Local `useState` for view-level state — no global store
-- `AppContent.tsx` holds the active view, selected plan ID, and active plan object
+- `app-content.tsx` holds the active view, selected plan ID, and active plan object
 
 ### Component Patterns
-- `forwardRef` for UI primitives (Button, Input)
-- Base UI (`@base-ui-components/react`) for accessible dialog/checkbox primitives
+- `forwardRef` for UI primitives (button, input)
+- Base UI (`@base-ui/react`) for accessible dialog/checkbox primitives
 - Controlled components throughout (no uncontrolled forms)
 
 ### TypeScript
 - `verbatimModuleSyntax` enforced — use `import type` for type-only imports
 - `noUnusedLocals` + `noUnusedParameters` enforced
 - `erasableSyntaxOnly` — no `enum`, no `namespace`
-- No path aliases — relative imports only (`../services/PlanService`)
+- No path aliases — relative imports only (`../services/plan-service`)
 
 ## Important Files
 
 | File | Role |
 |---|---|
 | `src/main.tsx` | Entry point — mounts App in StrictMode |
-| `src/App.tsx` | Composition root: ErrorBoundary → ToastProvider → AuthProvider → AppContent |
-| `src/AppContent.tsx` | Authenticated shell + manual router + plan state coordination |
-| `src/services/ApiClient.ts` | Centralized HTTP boundary with Effect, schema decode, 401 handling |
+| `src/app.tsx` | Composition root: ErrorBoundary → ToastProvider → AuthProvider → AppContent |
+| `src/app-content.tsx` | Authenticated shell + manual router + plan state coordination |
+| `src/services/api-client.ts` | Centralized HTTP boundary with Effect, schema decode, 401 handling |
 | `src/domain/*.schema.ts` | Runtime-validated types for all API payloads |
-| `src/hooks/useAuth.tsx` | Auth context, login/register/logout, 401 auto-logout wiring |
+| `src/hooks/use-auth.tsx` | Auth context, login/register/logout, 401 auto-logout wiring |
 | `vite.config.ts` | React + Tailwind + PWA plugins; /api proxy to :8080 |
 | `tsconfig.app.json` | Application TypeScript config (ES2023, bundler, strict hygiene) |
 | `.oxlintrc.json` | Lint rules: react hooks error, only-export-components warn |

@@ -1,0 +1,13 @@
+[
+  {
+    "date": "2026-08-24",
+    "macrostructure": "App Shell (functional)",
+    "theme": "Hum",
+    "enrichment": "none (app pages — function carries the page)",
+    "brief": "Grocery Planner · full app redesign · playful genre · multi-accent Hum palette",
+    "scope": "app",
+    "nav": "custom app-bar (minimal sticky header)",
+    "footer": "none (functional app)",
+    "theme_axes": "light / rounded-sans / multi-accent"
+  }
+]

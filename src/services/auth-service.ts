@@ -1,7 +1,7 @@
 import { Effect } from 'effect'
 import { Schema } from '@effect/schema'
 import { AuthPayloadSchema, UserSchema, HouseholdSchema, type AuthPayload } from '../domain/auth.schema'
-import { request, TokenStorage, type ApiError, type NetworkError, type DecodeError } from './ApiClient'
+import { request, TokenStorage, type ApiError, type NetworkError, type DecodeError } from './api-client'
 
 export const AuthService = {
   login: (username: string, password: string): Effect.Effect<AuthPayload, ApiError | NetworkError | DecodeError> =>

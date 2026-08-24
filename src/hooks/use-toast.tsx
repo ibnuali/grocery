@@ -45,7 +45,7 @@ export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({ childre
                 ? 'bg-rose-600 text-white'
                 : t.type === 'success'
                 ? 'bg-emerald-600 text-white'
-                : 'bg-slate-800 text-white'
+                : 'bg-foreground text-background'
             }`}
           >
             <span className="flex-1">{t.message}</span>

@@ -6,7 +6,7 @@ import {
   type ShoppingPlan,
   type PlanItem
 } from '../domain/plan.schema'
-import { request, type ApiError, type NetworkError, type DecodeError } from './ApiClient'
+import { request, type ApiError, type NetworkError, type DecodeError } from './api-client'
 
 export const PlanService = {
   listPlans: (): Effect.Effect<readonly ShoppingPlan[], ApiError | NetworkError | DecodeError> =>

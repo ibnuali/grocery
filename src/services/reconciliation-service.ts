@@ -1,6 +1,6 @@
 import { Effect } from 'effect'
 import { ShoppingPlanSchema, type ShoppingPlan } from '../domain/plan.schema'
-import { request, type ApiError, type NetworkError, type DecodeError } from './ApiClient'
+import { request, type ApiError, type NetworkError, type DecodeError } from './api-client'
 
 export interface PlannedItemReconcile {
   id: string

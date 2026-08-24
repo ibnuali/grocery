@@ -1,6 +1,6 @@
 import { openDB, type IDBPDatabase } from 'idb'
 import { Effect } from 'effect'
-import { request } from './ApiClient'
+import { request } from './api-client'
 import { PlanItemSchema } from '../domain/plan.schema'
 
 export interface MutationItem {

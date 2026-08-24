@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react'
 import { Effect } from 'effect'
-import { AuthService } from '../services/AuthService'
-import { setOnUnauthorized } from '../services/ApiClient'
+import { AuthService } from '../services/auth-service'
+import { setOnUnauthorized } from '../services/api-client'
 import type { User, Household } from '../domain/auth.schema'
 
 interface AuthContextType {

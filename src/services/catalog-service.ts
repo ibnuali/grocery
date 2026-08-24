@@ -1,6 +1,6 @@
 import { Effect } from 'effect'
 import { MasterItemSchema, MasterItemListSchema, type MasterItem } from '../domain/catalog.schema'
-import { request, type ApiError, type NetworkError, type DecodeError } from './ApiClient'
+import { request, type ApiError, type NetworkError, type DecodeError } from './api-client'
 
 export const CatalogService = {
   searchItems: (query: string, limit = 20): Effect.Effect<readonly MasterItem[], ApiError | NetworkError | DecodeError> =>
