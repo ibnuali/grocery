@@ -31,7 +31,7 @@ export const LoginView: React.FC = () => {
   return (
     <div style={{ display: 'flex', minHeight: '100vh', alignItems: 'center', justifyContent: 'center', padding: '1rem', background: 'var(--color-paper)' }}>
       <div style={{ position: 'fixed', top: '-20%', right: '-10%', width: '40vw', height: '40vw', borderRadius: '50%', background: 'oklch(86% 0.18 95 / 0.15)', filter: 'blur(80px)', pointerEvents: 'none' }} />
-      <div style={{ width: '100%', maxWidth: '26rem', borderRadius: 'var(--radius-card)', background: 'var(--color-paper)', padding: '2rem', boxShadow: '0 24px 64px -16px oklch(20% 0.012 250 / 0.12)', border: '1.5px solid var(--color-rule)', position: 'relative' }}>
+      <div style={{ width: '100%', maxWidth: '26rem', borderRadius: 'var(--radius-card)', background: 'var(--color-paper)', padding: 'clamp(1.5rem, 5vw, 2.5rem)', boxShadow: '0 24px 64px -16px oklch(20% 0.012 250 / 0.12)', border: '1.5px solid var(--color-rule)', position: 'relative' }}>
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center' }}>
           <div style={{ display: 'flex', height: '3.5rem', width: '3.5rem', alignItems: 'center', justifyContent: 'center', borderRadius: '16px', background: 'var(--color-accent)', color: 'var(--color-ink)', boxShadow: '0 4px 0 0 var(--color-accent-deep), 0 8px 20px -6px oklch(86% 0.18 95 / 0.5)', marginBottom: '1rem' }}>
             <ShoppingCart style={{ height: '1.75rem', width: '1.75rem' }} />

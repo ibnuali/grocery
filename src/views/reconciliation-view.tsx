@@ -11,41 +11,41 @@ import { Receipt, Plus, ArrowLeft, TrendingUp, TrendingDown, MinusCircle, Check 
 
 interface UnplannedItemWithKey extends UnplannedItemReconcile { _key: string }
 export interface ReconciliationViewProps { plan: ShoppingPlan; onSuccess: (updatedPlan: ShoppingPlan) => void; onBack: () => void }
-interface PlannedFormState { [id: string]: { actual_price: number; is_skipped: boolean } }
+interface PlannedFormState { [id: string]: { actual_price: string; is_skipped: boolean } }
 
 export const ReconciliationView: React.FC<ReconciliationViewProps> = ({ plan, onSuccess, onBack }) => {
   const [plannedState, setPlannedState] = useState<PlannedFormState>(() => {
     const initial: PlannedFormState = {}
-    plan.items?.forEach((item: PlanItem) => { initial[item.id] = { actual_price: 0, is_skipped: false } })
+    plan.items?.forEach((item: PlanItem) => { initial[item.id] = { actual_price: '', is_skipped: false } })
     return initial
   })
   const [unplannedItems, setUnplannedItems] = useState<UnplannedItemWithKey[]>([])
   const [isAddUnplannedOpen, setIsAddUnplannedOpen] = useState(false)
   const [unplannedName, setUnplannedName] = useState('')
   const [unplannedCategory, setUnplannedCategory] = useState('General')
-  const [unplannedQty, setUnplannedQty] = useState(1)
+  const [unplannedQty, setUnplannedQty] = useState('1')
   const [unplannedUnit, setUnplannedUnit] = useState('pcs')
-  const [unplannedPrice, setUnplannedPrice] = useState(0)
+  const [unplannedPrice, setUnplannedPrice] = useState('0')
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
-  const handlePriceChange = (id: string, price: number) => { setPlannedState((prev) => ({ ...prev, [id]: { ...prev[id], actual_price: price } })) }
+  const handlePriceChange = (id: string, price: string) => { setPlannedState((prev) => ({ ...prev, [id]: { ...prev[id], actual_price: price } })) }
   const handleToggleSkip = (id: string) => { setPlannedState((prev) => ({ ...prev, [id]: { ...prev[id], is_skipped: !prev[id].is_skipped } })) }
 
   const handleAddUnplannedSubmit = (e: React.FormEvent) => {
     e.preventDefault(); if (!unplannedName.trim()) return
     setUnplannedItems((prev) => [...prev, { _key: crypto.randomUUID(), item_name: unplannedName.trim(), category: unplannedCategory.trim() || 'General', qty: Number(unplannedQty) || 1, unit: unplannedUnit.trim() || 'pcs', actual_price: Number(unplannedPrice) || 0 }])
-    setIsAddUnplannedOpen(false); setUnplannedName(''); setUnplannedQty(1); setUnplannedUnit('pcs'); setUnplannedPrice(0)
+    setIsAddUnplannedOpen(false); setUnplannedName(''); setUnplannedQty('1'); setUnplannedUnit('pcs'); setUnplannedPrice('0')
   }
 
   const totalEstimated = plan.items?.reduce((acc: number, item: PlanItem) => { if (plannedState[item.id]?.is_skipped) return acc; return acc + Number(item.qty) * Number(item.estimated_price) }, 0) ?? 0
-  const plannedActualTotal = plan.items?.reduce((acc: number, item: PlanItem) => { const state = plannedState[item.id]; if (state?.is_skipped) return acc; return acc + Number(item.qty) * (state?.actual_price ?? 0) }, 0) ?? 0
+  const plannedActualTotal = plan.items?.reduce((acc: number, item: PlanItem) => { const state = plannedState[item.id]; if (state?.is_skipped) return acc; return acc + Number(item.qty) * (Number(state?.actual_price) || 0) }, 0) ?? 0
   const unplannedActualTotal = unplannedItems.reduce((acc: number, item: UnplannedItemWithKey) => acc + Number(item.qty) * Number(item.actual_price), 0)
   const grandTotalActual = plannedActualTotal + unplannedActualTotal
   const variance = grandTotalActual - totalEstimated
   const handleSubmitReconciliation = async () => {
     setSubmitting(true); setError(null)
-    const plannedPayload: PlannedItemReconcile[] = Object.entries(plannedState).map(([id, val]) => ({ id, actual_price: val.actual_price, is_skipped: val.is_skipped }))
+    const plannedPayload: PlannedItemReconcile[] = Object.entries(plannedState).map(([id, val]) => ({ id, actual_price: Number(val.actual_price) || 0, is_skipped: val.is_skipped }))
     const prog = ReconciliationService.reconcile(plan.id, plannedPayload, unplannedItems.map(({ _key, ...rest }) => rest)).pipe(
       Effect.map((updatedPlan) => onSuccess(updatedPlan)),
       Effect.catchAll((err) => { const message = err instanceof Error ? err.message : 'Gagal menyimpan rekonsiliasi'; setError(message); return Effect.succeed(undefined) })
@@ -57,8 +57,8 @@ export const ReconciliationView: React.FC<ReconciliationViewProps> = ({ plan, on
   const mono: React.CSSProperties = { fontFamily: 'var(--font-mono)', fontVariantNumeric: 'tabular-nums' }
 
   return (
-    <div style={{ maxWidth: '40rem', margin: '0 auto', padding: '1.5rem 1rem', display: 'flex', flexDirection: 'column', gap: '1.5rem', paddingBottom: '7rem' }}>
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+    <div style={{ maxWidth: '40rem', margin: '0 auto', padding: '1.5rem 1rem', display: 'flex', flexDirection: 'column', gap: '1.5rem', paddingBottom: '8rem' }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.5rem' }}>
         <button type="button" onClick={onBack} style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', fontSize: 'var(--text-xs)', fontWeight: 600, color: 'var(--color-ink-3)', background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'var(--font-body)', transition: 'color 180ms' }}
           onMouseEnter={(e) => { e.currentTarget.style.color = 'var(--color-ink)' }} onMouseLeave={(e) => { e.currentTarget.style.color = 'var(--color-ink-3)' }}>
           <ArrowLeft style={{ height: '1rem', width: '1rem' }} /><span>Kembali</span>
@@ -76,7 +76,7 @@ export const ReconciliationView: React.FC<ReconciliationViewProps> = ({ plan, on
             <p style={{ fontSize: 'var(--text-xs)', color: 'var(--color-ink-3)', fontFamily: 'var(--font-body)' }}>{plan.title}</p>
           </div>
         </div>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '0.75rem', paddingTop: '0.5rem' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(0, 1fr))', gap: '0.75rem', paddingTop: '0.5rem' }}>
           <div style={{ borderRadius: '14px', background: 'var(--color-paper-2)', padding: '1rem', border: '1.5px solid var(--color-rule)' }}>
             <div style={{ fontSize: '0.6875rem', color: 'var(--color-ink-3)', fontWeight: 500, fontFamily: 'var(--font-body)' }}>Estimasi Awal</div>
             <div style={{ fontSize: 'var(--text-base)', fontWeight: 700, color: 'var(--color-ink)', ...mono }}>Rp{totalEstimated.toLocaleString('id-ID')}</div>
@@ -102,14 +102,14 @@ export const ReconciliationView: React.FC<ReconciliationViewProps> = ({ plan, on
         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
           {plan.items?.map((item: PlanItem) => {
             const isSkipped = plannedState[item.id]?.is_skipped
-            const actualPrice = plannedState[item.id]?.actual_price ?? 0
+            const actualPrice = Number(plannedState[item.id]?.actual_price) || 0
             const estimatedSubtotal = Number(item.qty) * Number(item.estimated_price)
             const actualSubtotal = Number(item.qty) * actualPrice
             const diff = actualSubtotal - estimatedSubtotal
             return (
               <div key={item.id} style={{ borderRadius: '14px', padding: '1rem', transition: 'all 180ms var(--ease-out)', border: '1.5px solid var(--color-rule)', background: isSkipped ? 'var(--color-paper-2)' : 'var(--color-paper)', opacity: isSkipped ? 0.5 : 1 }}>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-                  <div>
+                  <div style={{ flex: '1 1 auto' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                       <span style={{ fontSize: 'var(--text-sm)', fontWeight: 700, color: isSkipped ? 'var(--color-ink-3)' : 'var(--color-ink)', fontFamily: 'var(--font-body)', textDecoration: isSkipped ? 'line-through' : 'none' }}>{item.item_name}</span>
                       {isSkipped && <span style={{ borderRadius: '6px', background: 'var(--color-paper-3)', padding: '0.125rem 0.375rem', fontSize: '0.625rem', fontWeight: 600, color: 'var(--color-ink-3)', fontFamily: 'var(--font-body)' }}>Kosong</span>}
@@ -119,7 +119,7 @@ export const ReconciliationView: React.FC<ReconciliationViewProps> = ({ plan, on
                   <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>
                     {!isSkipped && (
                       <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                        <div style={{ width: '8rem' }}><Input type="number" min="0" step="any" value={actualPrice} onChange={(e: React.ChangeEvent<HTMLInputElement>) => handlePriceChange(item.id, parseFloat(e.target.value) || 0)} placeholder="Harga aktual" /></div>
+                        <div style={{ width: '8rem' }}><Input type="number" min="0" step="any" value={actualPrice} onChange={(e: React.ChangeEvent<HTMLInputElement>) => handlePriceChange(item.id, e.target.value)} placeholder="Harga aktual" /></div>
                         <div style={{ textAlign: 'right', minWidth: '4.5rem' }}>
                           <div style={{ fontSize: 'var(--text-xs)', fontWeight: 800, color: 'var(--color-ink)', ...mono }}>Rp{actualSubtotal.toLocaleString('id-ID')}</div>
                           {diff !== 0 && <div style={{ fontSize: '0.625rem', fontWeight: 600, color: diff > 0 ? 'var(--color-accent-3)' : 'var(--color-mint)', fontFamily: 'var(--font-mono)' }}>{diff > 0 ? `+${diff.toLocaleString('id-ID')}` : diff.toLocaleString('id-ID')}</div>}
@@ -167,7 +167,7 @@ export const ReconciliationView: React.FC<ReconciliationViewProps> = ({ plan, on
       </div>
 
       {/* Floating Action Bar */}
-      <div style={{ position: 'fixed', bottom: 0, left: 0, right: 0, padding: '1rem', background: 'var(--color-paper-glass)', backdropFilter: 'blur(12px)', borderTop: '1.5px solid var(--color-rule)', zIndex: 'var(--z-sticky)' }}>
+      <div style={{ position: 'fixed', bottom: 0, left: 0, right: 0, padding: '1rem', paddingBottom: 'calc(1rem + env(safe-area-inset-bottom, 0px))', background: 'var(--color-paper-glass)', backdropFilter: 'blur(12px)', borderTop: '1.5px solid var(--color-rule)', zIndex: 'var(--z-sticky)' }}>
         <div style={{ maxWidth: '40rem', margin: '0 auto', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '1rem' }}>
           <div>
             <div style={{ fontSize: 'var(--text-xs)', color: 'var(--color-ink-3)', fontFamily: 'var(--font-body)' }}>Total Akhir Struk:</div>
@@ -184,13 +184,13 @@ export const ReconciliationView: React.FC<ReconciliationViewProps> = ({ plan, on
         <form onSubmit={handleAddUnplannedSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.375rem' }}>
             <label style={{ fontSize: 'var(--text-xs)', fontWeight: 600, color: 'var(--color-ink-2)', fontFamily: 'var(--font-body)' }}>Nama Barang</label>
-            <ItemAutocomplete value={unplannedName} onChange={(name: string, master?: MasterItem) => { setUnplannedName(name); if (master) { setUnplannedPrice(Number(master.latest_price)); if (master.category) setUnplannedCategory(master.category) } }} />
+            <ItemAutocomplete value={unplannedName} onChange={(name: string, master?: MasterItem) => { setUnplannedName(name); if (master) { setUnplannedPrice(String(master.latest_price)); if (master.category) setUnplannedCategory(master.category) } }} />
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
-            <Input label="Jumlah (Qty)" type="number" min="0.1" step="any" value={unplannedQty} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setUnplannedQty(parseFloat(e.target.value) || 1)} required />
+            <Input label="Jumlah (Qty)" type="number" min="0.1" step="any" value={unplannedQty} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setUnplannedQty(e.target.value)} required />
             <Input label="Satuan (Unit)" placeholder="pcs, btl" value={unplannedUnit} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setUnplannedUnit(e.target.value)} required />
           </div>
-          <Input label="Harga Aktual (Rp)" type="number" min="0" step="any" value={unplannedPrice} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setUnplannedPrice(parseFloat(e.target.value) || 0)} required />
+          <Input label="Harga Aktual (Rp)" type="number" min="0" step="any" value={unplannedPrice} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setUnplannedPrice(e.target.value)} required />
           <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.5rem', paddingTop: '0.5rem' }}>
             <Button type="button" variant="outline" size="sm" onClick={() => setIsAddUnplannedOpen(false)}>Batal</Button>
             <Button type="submit" size="sm">Tambahkan ke Struk</Button>

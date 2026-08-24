@@ -18,20 +18,20 @@ export const PlanDetailView: React.FC<PlanDetailViewProps> = ({ planTitle, shopp
   const [isAddOpen, setIsAddOpen] = useState(false)
   const [itemName, setItemName] = useState('')
   const [category, setCategory] = useState('General')
-  const [qty, setQty] = useState(1)
+  const [qty, setQty] = useState('1')
   const [unit, setUnit] = useState('pcs')
-  const [estimatedPrice, setEstimatedPrice] = useState(0)
+  const [estimatedPrice, setEstimatedPrice] = useState('0')
   const [submitting, setSubmitting] = useState(false)
 
   const handleAutocompleteChange = (name: string, master?: MasterItem) => {
     setItemName(name)
-    if (master) { setEstimatedPrice(Number(master.latest_price)); if (master.category) setCategory(master.category) }
+    if (master) { setEstimatedPrice(String(master.latest_price)); if (master.category) setCategory(master.category) }
   }
 
   const handleFormSubmit = async (e: React.FormEvent) => {
     e.preventDefault(); if (!itemName.trim()) return; setSubmitting(true)
     await onAddItem({ itemName: itemName.trim(), category: category.trim() || 'General', qty: Number(qty) || 1, unit: unit.trim() || 'pcs', estimatedPrice: Number(estimatedPrice) || 0 })
-    setSubmitting(false); setIsAddOpen(false); setItemName(''); setQty(1); setUnit('pcs'); setEstimatedPrice(0)
+    setSubmitting(false); setIsAddOpen(false); setItemName(''); setQty('1'); setUnit('pcs'); setEstimatedPrice('0')
   }
 
   const totalEstimated = items.reduce((acc, item) => acc + Number(item.qty) * Number(item.estimated_price), 0)
@@ -44,7 +44,7 @@ export const PlanDetailView: React.FC<PlanDetailViewProps> = ({ planTitle, shopp
 
   return (
     <div style={{ maxWidth: '40rem', margin: '0 auto', padding: '1.5rem 1rem', display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.5rem' }}>
         <button type="button" onClick={onBack} style={{ fontSize: 'var(--text-xs)', fontWeight: 600, color: 'var(--color-ink-3)', background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'var(--font-body)', transition: 'color 180ms' }}
           onMouseEnter={(e) => { e.currentTarget.style.color = 'var(--color-ink)' }} onMouseLeave={(e) => { e.currentTarget.style.color = 'var(--color-ink-3)' }}>
           ← Kembali ke Daftar
@@ -125,13 +125,13 @@ export const PlanDetailView: React.FC<PlanDetailViewProps> = ({ planTitle, shopp
             <ItemAutocomplete value={itemName} onChange={handleAutocompleteChange} />
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
-            <Input label="Jumlah (Qty)" type="number" min="0.1" step="any" value={qty} onChange={(e) => setQty(parseFloat(e.target.value) || 1)} required />
+            <Input label="Jumlah (Qty)" type="number" min="0.1" step="any" value={qty} onChange={(e) => setQty(e.target.value)} required />
             <Input label="Satuan (Unit)" placeholder="pcs, kg, btl" value={unit} onChange={(e) => setUnit(e.target.value)} required />
           </div>
-          <Input label="Estimasi Harga Satuan (Rp)" type="number" min="0" step="any" value={estimatedPrice} onChange={(e) => setEstimatedPrice(parseFloat(e.target.value) || 0)} required />
+          <Input label="Estimasi Harga Satuan (Rp)" type="number" min="0" step="any" value={estimatedPrice} onChange={(e) => setEstimatedPrice(e.target.value)} required />
           <div style={{ borderRadius: 'var(--radius-input)', background: 'var(--color-paper-2)', padding: '0.75rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: 'var(--text-xs)', fontFamily: 'var(--font-body)' }}>
             <span style={{ color: 'var(--color-ink-3)', fontWeight: 500 }}>Subtotal Estimasi:</span>
-            <span style={{ fontWeight: 700, color: 'var(--color-ink)', fontSize: 'var(--text-sm)', fontFamily: 'var(--font-mono)', fontVariantNumeric: 'tabular-nums' }}>Rp{(qty * estimatedPrice).toLocaleString('id-ID')}</span>
+            <span style={{ fontWeight: 700, color: 'var(--color-ink)', fontSize: 'var(--text-sm)', fontFamily: 'var(--font-mono)', fontVariantNumeric: 'tabular-nums' }}>Rp{(Number(qty) * Number(estimatedPrice)).toLocaleString('id-ID')}</span>
           </div>
           <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.5rem', paddingTop: '0.5rem' }}>
             <Button type="button" variant="outline" size="sm" onClick={() => setIsAddOpen(false)}>Batal</Button>

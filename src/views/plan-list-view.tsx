@@ -19,7 +19,7 @@ export const PlanListView: React.FC<PlanListViewProps> = ({ onSelectPlan, onLogo
   const [loading, setLoading] = useState(true)
   const [isCreateOpen, setIsCreateOpen] = useState(false)
   const [title, setTitle] = useState('')
-  const [budgetTarget, setBudgetTarget] = useState(1500000)
+  const [budgetTarget, setBudgetTarget] = useState('1500000')
   const [shoppingDate, setShoppingDate] = useState(new Date().toISOString().split('T')[0])
   const [creating, setCreating] = useState(false)
 
@@ -38,7 +38,7 @@ export const PlanListView: React.FC<PlanListViewProps> = ({ onSelectPlan, onLogo
     e.preventDefault()
     if (!title.trim()) return
     setCreating(true)
-    const prog = PlanService.createPlan(title.trim(), budgetTarget, shoppingDate).pipe(
+    const prog = PlanService.createPlan(title.trim(), Number(budgetTarget) || 0, shoppingDate).pipe(
       Effect.map((newPlan) => { setIsCreateOpen(false); setTitle(''); setCreating(false); onSelectPlan(newPlan.id) }),
       Effect.catchAll(() => { setCreating(false); toast('Gagal membuat rencana belanja', 'error'); return Effect.succeed(undefined) })
     )
@@ -46,7 +46,7 @@ export const PlanListView: React.FC<PlanListViewProps> = ({ onSelectPlan, onLogo
   }
 
   const cardBase: React.CSSProperties = {
-    display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+    display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '1rem',
     borderRadius: 'var(--radius-card)', background: 'var(--color-paper)', padding: '1.25rem',
     border: '1.5px solid var(--color-rule)', cursor: 'pointer',
     transition: 'transform 220ms var(--ease-out), box-shadow 220ms var(--ease-out), border-color 220ms var(--ease-out)',
@@ -55,8 +55,8 @@ export const PlanListView: React.FC<PlanListViewProps> = ({ onSelectPlan, onLogo
 
   return (
     <div style={{ maxWidth: '40rem', margin: '0 auto', padding: '2rem 1rem', display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-        <div>
+      <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.75rem' }}>
+        <div style={{ flex: '1 1 auto', minWidth: '12rem' }}>
           <h1 style={{ fontSize: 'var(--text-2xl)', fontWeight: 700, color: 'var(--color-ink)', fontFamily: 'var(--font-display)', letterSpacing: '-0.025em', lineHeight: 1.2 }}>Rencana Belanja</h1>
           <p style={{ fontSize: 'var(--text-xs)', color: 'var(--color-ink-3)', fontFamily: 'var(--font-body)', marginTop: '0.25rem' }}>Kelola dan estimasi belanja bulanan keluarga</p>
         </div>
@@ -109,7 +109,7 @@ export const PlanListView: React.FC<PlanListViewProps> = ({ onSelectPlan, onLogo
       <Modal open={isCreateOpen} onOpenChange={setIsCreateOpen} title="Buat Rencana Belanja Baru" description="Tetapkan nama periode belanja dan target anggaran">
         <form onSubmit={handleCreateSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
           <Input label="Nama / Judul Rencana" placeholder="Contoh: Belanja Bulanan Mei 2026" value={title} onChange={(e) => setTitle(e.target.value)} required />
-          <Input label="Target Anggaran / Budget (Rp)" type="number" min="0" step="10000" value={budgetTarget} onChange={(e) => setBudgetTarget(parseFloat(e.target.value) || 0)} required />
+          <Input label="Target Anggaran / Budget (Rp)" type="number" min="0" step="10000" value={budgetTarget} onChange={(e) => setBudgetTarget(e.target.value)} required />
           <Input label="Tanggal Rencana Belanja" type="date" value={shoppingDate} onChange={(e) => setShoppingDate(e.target.value)} required />
           <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.5rem', paddingTop: '0.5rem' }}>
             <Button type="button" variant="outline" size="sm" onClick={() => setIsCreateOpen(false)}>Batal</Button>

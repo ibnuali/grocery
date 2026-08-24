@@ -50,8 +50,8 @@ export const InStoreView: React.FC<InStoreViewProps> = ({ planId, planTitle, ini
   }
 
   return (
-    <div style={{ maxWidth: '36rem', margin: '0 auto', padding: '1.25rem 1rem', display: 'flex', flexDirection: 'column', gap: '1.25rem', paddingBottom: '6rem' }}>
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+    <div style={{ maxWidth: '36rem', margin: '0 auto', padding: '1.25rem 1rem', display: 'flex', flexDirection: 'column', gap: '1.25rem', paddingBottom: '7rem' }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.5rem' }}>
         <button type="button" onClick={onBack} style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', fontSize: 'var(--text-xs)', fontWeight: 600, color: 'var(--color-ink-3)', background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'var(--font-body)', transition: 'color 180ms' }}
           onMouseEnter={(e) => { e.currentTarget.style.color = 'var(--color-ink)' }} onMouseLeave={(e) => { e.currentTarget.style.color = 'var(--color-ink-3)' }}>
           <ArrowLeft style={{ height: '1rem', width: '1rem' }} /><span>Kembali</span>
@@ -71,7 +71,7 @@ export const InStoreView: React.FC<InStoreViewProps> = ({ planId, planTitle, ini
       </div>
 
       {/* Progress Card — dark surface */}
-      <div style={{ position: 'sticky', top: '0.75rem', zIndex: 'var(--z-sticky)', borderRadius: 'var(--radius-card)', background: 'var(--color-ink)', color: 'var(--color-paper)', padding: '1.25rem', boxShadow: '0 16px 48px -12px oklch(20% 0.012 250 / 0.3)', display: 'flex', flexDirection: 'column', gap: '0.75rem' }} aria-live="polite">
+      <div style={{ position: 'sticky', top: '4rem', zIndex: 'var(--z-sticky)', borderRadius: 'var(--radius-card)', background: 'var(--color-ink)', color: 'var(--color-paper)', padding: '1.25rem', boxShadow: '0 16px 48px -12px oklch(20% 0.012 250 / 0.3)', display: 'flex', flexDirection: 'column', gap: '0.75rem' }} aria-live="polite">
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <div>
             <span style={{ fontSize: '0.6875rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--color-accent)', fontFamily: 'var(--font-mono)' }}>Mode Belanja</span>
@@ -137,7 +137,7 @@ export const InStoreView: React.FC<InStoreViewProps> = ({ planId, planTitle, ini
       )}
 
       {/* Floating Bottom Bar */}
-      <div style={{ position: 'fixed', bottom: 0, left: 0, right: 0, padding: '1rem', background: 'var(--color-paper-glass)', backdropFilter: 'blur(12px)', borderTop: '1.5px solid var(--color-rule)', zIndex: 'var(--z-sticky)' }}>
+      <div style={{ position: 'fixed', bottom: 0, left: 0, right: 0, padding: '1rem', paddingBottom: 'calc(1rem + env(safe-area-inset-bottom, 0px))', background: 'var(--color-paper-glass)', backdropFilter: 'blur(12px)', borderTop: '1.5px solid var(--color-rule)', zIndex: 'var(--z-sticky)' }}>
         <div style={{ maxWidth: '36rem', margin: '0 auto', display: 'flex', gap: '0.75rem' }}>
           <Button variant="outline" onClick={onBack} style={{ flex: 1 }}>Kembali</Button>
           <Button onClick={onProceedToReconcile} style={{ flex: 1 }}><ShoppingCart style={{ height: '1rem', width: '1rem' }} /><span>Selesai & Rekonsiliasi</span></Button>

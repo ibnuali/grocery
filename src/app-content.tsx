@@ -58,7 +58,7 @@ export const AppContent: React.FC = () => {
     <div style={{ minHeight: '100vh', background: 'var(--color-paper)', color: 'var(--color-ink)' }}>
       {/* App Header */}
       <header style={{ position: 'sticky', top: 0, zIndex: 'var(--z-sticky)', borderBottom: '1.5px solid var(--color-rule)', background: 'var(--color-paper-glass)', backdropFilter: 'blur(12px)' }}>
-        <div style={{ maxWidth: '40rem', margin: '0 auto', padding: '0.75rem 1rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        <div style={{ maxWidth: '40rem', margin: '0 auto', padding: '0.75rem 1rem', paddingTop: 'calc(0.75rem + env(safe-area-inset-top, 0px))', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
             {/* Character mark — small pulsing dot */}
             <span style={{ height: '0.5rem', width: '0.5rem', borderRadius: '50%', background: 'var(--color-accent)', animation: 'pulse 4s ease-in-out infinite' }} />
