@@ -16,8 +16,8 @@ export default defineConfig({
         name: 'Grocery Planner & Price Estimator',
         short_name: 'GroceryPlan',
         description: 'Smart grocery shopping planner with price estimation and trolley checklist',
-        theme_color: '#10b981',
-        background_color: '#ffffff',
+        theme_color: '#f8f5e8',
+        background_color: '#f8f5e8',
         display: 'standalone',
         icons: [
           {

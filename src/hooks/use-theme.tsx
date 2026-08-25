@@ -29,6 +29,11 @@ function applyTheme(resolved: ResolvedTheme) {
   } else {
     root.classList.remove('dark')
   }
+
+  root.style.colorScheme = resolved
+  const themeColor = getComputedStyle(root).getPropertyValue('--color-paper').trim()
+  const themeColorMeta = document.querySelector<HTMLMetaElement>('meta[name="theme-color"]')
+  if (themeColorMeta && themeColor) themeColorMeta.content = themeColor
 }
 
 export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
