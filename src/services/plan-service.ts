@@ -27,7 +27,7 @@ export const PlanService = {
         method: 'POST',
         body: JSON.stringify({
           title,
-          budget_target: budgetTarget,
+          budget_target: String(budgetTarget),
           shopping_date: shoppingDate || new Date().toISOString().split('T')[0]
         })
       },
