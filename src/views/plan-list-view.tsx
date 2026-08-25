@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef, useCallback } from 'react'
 import { Effect } from 'effect'
 import { useTranslation } from 'react-i18next'
 import { PlanService } from '../services/plan-service'
@@ -7,35 +7,101 @@ import { Modal } from '../components/ui/modal'
 import { Input } from '../components/ui/input'
 import { Button } from '../components/ui/button'
 import type { ShoppingPlan } from '../domain/plan.schema'
-import { Plus, Calendar, ChevronRight, ShoppingBag, LogOut } from 'lucide-react'
+import { Plus, Calendar, ChevronRight, ShoppingBag } from 'lucide-react'
 import { formatCurrency } from '../i18n/format'
+
+export const PlanListSkeleton: React.FC = () => {
+  const { t } = useTranslation()
+
+  return (
+    <div className="plan-list-skeleton" role="status" aria-live="polite" aria-label={t('planList.loading')}>
+      <span className="sr-only">{t('planList.loading')}</span>
+      <div className="plan-list-skeleton__cards">
+        <span className="skeleton-block skeleton-block--plan-card" />
+        <span className="skeleton-block skeleton-block--plan-card" />
+        <span className="skeleton-block skeleton-block--plan-card" />
+      </div>
+    </div>
+  )
+}
 
 export interface PlanListViewProps {
   onSelectPlan: (planId: string) => void
   onLogout: () => void
 }
 
-export const PlanListView: React.FC<PlanListViewProps> = ({ onSelectPlan, onLogout }) => {
+export const PlanListView: React.FC<PlanListViewProps> = ({ onSelectPlan }) => {
   const { t } = useTranslation()
   const { toast } = useToast()
   const [plans, setPlans] = useState<readonly ShoppingPlan[]>([])
   const [loading, setLoading] = useState(true)
+  const [loadingMore, setLoadingMore] = useState(false)
+  const [nextCursor, setNextCursor] = useState<string | null>(null)
+  const [hasMore, setHasMore] = useState(true)
   const [isCreateOpen, setIsCreateOpen] = useState(false)
   const [title, setTitle] = useState('')
   const [budgetTarget, setBudgetTarget] = useState('1500000')
   const [shoppingDate, setShoppingDate] = useState(new Date().toISOString().split('T')[0])
   const [creating, setCreating] = useState(false)
+  const loadingRef = useRef(false)
+  const nextCursorRef = useRef<string | null>(null)
+  const sentinelRef = useRef<HTMLDivElement | null>(null)
 
-  const loadPlans = async () => {
-    setLoading(true)
-    const prog = PlanService.listPlans().pipe(
-      Effect.map((data) => { setPlans(data); setLoading(false) }),
-      Effect.catchAll(() => { toast(t('planList.errorLoad'), 'error'); setLoading(false); return Effect.succeed(undefined) })
+  const loadPlans = useCallback(async (cursor?: string) => {
+    const isInitial = cursor === undefined
+    if (loadingRef.current || (!isInitial && !cursor)) return
+
+    loadingRef.current = true
+    if (isInitial) setLoading(true)
+    else setLoadingMore(true)
+
+    const prog = PlanService.listPlans(cursor, 20).pipe(
+      Effect.map(({ items, next_cursor }) => {
+        if (isInitial) {
+          setPlans(items)
+        } else {
+          setPlans((previous) => {
+            const existingIds = new Set(previous.map((plan) => plan.id))
+            return [...previous, ...items.filter((plan) => !existingIds.has(plan.id))]
+          })
+        }
+        nextCursorRef.current = next_cursor
+        setNextCursor(next_cursor)
+        setHasMore(next_cursor !== null)
+      }),
+      Effect.catchAll(() => {
+        toast(t('planList.errorLoad'), 'error')
+        if (isInitial) setPlans([])
+        return Effect.succeed(undefined)
+      })
     )
-    await Effect.runPromise(prog)
-  }
 
-  useEffect(() => { loadPlans() }, [])
+    try {
+      await Effect.runPromise(prog)
+    } finally {
+      loadingRef.current = false
+      if (isInitial) setLoading(false)
+      else setLoadingMore(false)
+    }
+  }, [t, toast])
+
+  useEffect(() => {
+    const timer = window.setTimeout(() => { void loadPlans() }, 0)
+    return () => window.clearTimeout(timer)
+  }, [loadPlans])
+
+  useEffect(() => {
+    const sentinel = sentinelRef.current
+    if (!sentinel || loading || !hasMore || nextCursor === null) return
+
+    const observer = new IntersectionObserver((entries) => {
+      if (!entries[0]?.isIntersecting) return
+      const cursor = nextCursorRef.current
+      if (cursor) void loadPlans(cursor)
+    }, { rootMargin: '320px' })
+    observer.observe(sentinel)
+    return () => observer.disconnect()
+  }, [hasMore, loading, nextCursor, loadPlans])
 
   const handleCreateSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -65,12 +131,11 @@ export const PlanListView: React.FC<PlanListViewProps> = ({ onSelectPlan, onLogo
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
           <Button size="sm" onClick={() => setIsCreateOpen(true)}><Plus style={{ height: '1rem', width: '1rem' }} /><span>{t('planList.createPlan')}</span></Button>
-          <Button variant="outline" size="sm" onClick={onLogout}><LogOut style={{ height: '1rem', width: '1rem', color: 'var(--color-ink-3)' }} /></Button>
         </div>
       </div>
 
       {loading ? (
-        <div style={{ borderRadius: 'var(--radius-card)', background: 'var(--color-paper-2)', padding: '3rem', textAlign: 'center', border: '1.5px solid var(--color-rule)', color: 'var(--color-ink-3)', fontSize: 'var(--text-sm)', fontFamily: 'var(--font-body)' }}>{t('planList.loading')}</div>
+        <PlanListSkeleton />
       ) : plans.length === 0 ? (
         <div style={{ borderRadius: 'var(--radius-card)', border: '2px dashed var(--color-rule)', background: 'var(--color-paper)', padding: '2.5rem', textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.75rem' }}>
           <div style={{ display: 'flex', height: '3rem', width: '3rem', alignItems: 'center', justifyContent: 'center', borderRadius: '14px', background: 'oklch(86% 0.18 95 / 0.2)', color: 'var(--color-accent-deep)' }}>
@@ -88,7 +153,7 @@ export const PlanListView: React.FC<PlanListViewProps> = ({ onSelectPlan, onLogo
             const isCompleted = p.status === 'COMPLETED'
             return (
               <div key={p.id} onClick={() => onSelectPlan(p.id)} style={cardBase}
-                onMouseEnter={(e) => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 8px 24px -8px oklch(20% 0.012 250 / 0.12)'; e.currentTarget.style.borderColor = 'var(--color-accent-2)' }}
+                onMouseEnter={(e) => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 8px 24px -8px oklch(20% 0.012 250 / 0.12)'; e.currentTarget.style.borderColor = 'var(--color-accent-deep)' }}
                 onMouseLeave={(e) => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 2px 8px -4px oklch(20% 0.012 250 / 0.06)'; e.currentTarget.style.borderColor = 'var(--color-rule)' }}
               >
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
@@ -106,6 +171,8 @@ export const PlanListView: React.FC<PlanListViewProps> = ({ onSelectPlan, onLogo
               </div>
             )
           })}
+          {hasMore && <div ref={sentinelRef} aria-hidden="true" style={{ height: '1px' }} />}
+          {loadingMore && <div role="status" aria-live="polite" style={{ textAlign: 'center', color: 'var(--color-ink-3)', fontSize: 'var(--text-xs)', padding: '0.5rem' }}>{t('common.loading')}</div>}
         </div>
       )}
 

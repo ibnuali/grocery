@@ -36,8 +36,8 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
             transition: 'border-color 180ms var(--ease-out), box-shadow 180ms var(--ease-out)',
           }}
           onFocus={(e) => {
-            e.currentTarget.style.borderColor = error ? 'var(--color-accent-3)' : 'var(--color-accent-2)'
-            e.currentTarget.style.boxShadow = `0 0 0 3px oklch(66% 0.18 235 / 0.15)`
+            e.currentTarget.style.borderColor = error ? 'var(--color-accent-3)' : 'var(--color-accent-deep)'
+            e.currentTarget.style.boxShadow = `0 0 0 3px oklch(76% 0.20 95 / 0.25)`
             props.onFocus?.(e)
           }}
           onBlur={(e) => {

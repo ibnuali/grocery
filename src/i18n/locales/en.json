@@ -18,7 +18,18 @@
     "itemName": "Item Name",
     "qty": "Quantity (Qty)",
     "unit": "Unit",
-    "unitPlaceholder": "pcs, kg, bottle"
+    "unitPlaceholder": "pcs, kg, bottle",
+    "accountMenu": "Account menu",
+    "profile": "User profile",
+    "settings": "Settings",
+    "logout": "Log out"
+  },
+  "navigation": {
+    "label": "Main navigation",
+    "plans": "Plans",
+    "detail": "Details",
+    "shop": "Shopping",
+    "receipt": "Receipt"
   },
   "login": {
     "title": "Grocery Planner",

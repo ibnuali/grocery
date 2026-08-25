@@ -27,4 +27,8 @@ export const ShoppingPlanSchema = Schema.Struct({
 })
 export type ShoppingPlan = Schema.Schema.Type<typeof ShoppingPlanSchema>
 
-export const ShoppingPlanListSchema = Schema.Array(ShoppingPlanSchema)
+export const ShoppingPlanPageSchema = Schema.Struct({
+  items: Schema.Array(ShoppingPlanSchema),
+  next_cursor: Schema.NullOr(Schema.String)
+})
+export type ShoppingPlanPage = Schema.Schema.Type<typeof ShoppingPlanPageSchema>

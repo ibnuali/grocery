@@ -10,6 +10,40 @@ import type { PlanItem } from '../domain/plan.schema'
 import { useTranslation } from 'react-i18next'
 import { formatCurrency } from '../i18n/format'
 
+export const PlanDetailSkeleton: React.FC = () => (
+  <div className="plan-detail-skeleton" role="status" aria-live="polite" aria-label="Loading plan details">
+    <span className="sr-only">Loading plan details</span>
+    <div className="plan-detail-skeleton__topline">
+      <span className="skeleton-block skeleton-block--back" />
+      <span className="skeleton-block skeleton-block--date" />
+    </div>
+    <section className="plan-detail-skeleton__card">
+      <div className="plan-detail-skeleton__heading">
+        <span className="skeleton-block skeleton-block--title" />
+        <span className="skeleton-block skeleton-block--subtitle" />
+      </div>
+      <div className="plan-detail-skeleton__actions">
+        <span className="skeleton-block skeleton-block--button" />
+        <span className="skeleton-block skeleton-block--button skeleton-block--button-wide" />
+      </div>
+      <span className="skeleton-block skeleton-block--bar" />
+      <div className="plan-detail-skeleton__summary">
+        <span className="skeleton-block skeleton-block--summary" />
+        <span className="skeleton-block skeleton-block--summary" />
+      </div>
+    </section>
+    <div className="plan-detail-skeleton__items-heading">
+      <span className="skeleton-block skeleton-block--section-title" />
+      <span className="skeleton-block skeleton-block--button" />
+    </div>
+    <div className="plan-detail-skeleton__items">
+      <span className="skeleton-block skeleton-block--item" />
+      <span className="skeleton-block skeleton-block--item" />
+      <span className="skeleton-block skeleton-block--item" />
+    </div>
+  </div>
+)
+
 export interface PlanDetailViewProps {
   planTitle: string; shoppingDate: string; budgetTarget: number; items: readonly PlanItem[]
   onAddItem: (item: { itemName: string; qty: number; unit: string; estimatedPrice: number; category: string }) => Promise<void>
@@ -98,7 +132,7 @@ export const PlanDetailView: React.FC<PlanDetailViewProps> = ({ planTitle, shopp
             {items.map((item) => {
               const subtotal = Number(item.qty) * Number(item.estimated_price)
               return (
-                <div key={item.id} style={itemRow} onMouseEnter={(e) => { e.currentTarget.style.borderColor = 'var(--color-accent-2)' }} onMouseLeave={(e) => { e.currentTarget.style.borderColor = 'var(--color-rule)' }}>
+                <div key={item.id} style={itemRow} onMouseEnter={(e) => { e.currentTarget.style.borderColor = 'var(--color-accent-deep)' }} onMouseLeave={(e) => { e.currentTarget.style.borderColor = 'var(--color-rule)' }}>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '0.125rem' }}>
                     <div style={{ fontSize: 'var(--text-sm)', fontWeight: 700, color: 'var(--color-ink)', fontFamily: 'var(--font-body)' }}>{item.item_name}</div>
                     <div style={{ fontSize: 'var(--text-xs)', color: 'var(--color-ink-3)', fontFamily: 'var(--font-mono)', fontVariantNumeric: 'tabular-nums' }}>{Number(item.qty)} {item.unit} × {formatCurrency(Number(item.estimated_price))}</div>

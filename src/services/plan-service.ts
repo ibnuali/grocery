@@ -2,16 +2,20 @@ import { Effect } from 'effect'
 import { Schema } from '@effect/schema'
 import {
   ShoppingPlanSchema,
-  ShoppingPlanListSchema,
+  ShoppingPlanPageSchema,
   PlanItemSchema,
   type ShoppingPlan,
+  type ShoppingPlanPage,
   type PlanItem
 } from '../domain/plan.schema'
 import { request, type ApiError, type NetworkError, type DecodeError } from './api-client'
 
 export const PlanService = {
-  listPlans: (): Effect.Effect<readonly ShoppingPlan[], ApiError | NetworkError | DecodeError> =>
-    request('/api/v1/plans', { method: 'GET' }, ShoppingPlanListSchema),
+  listPlans: (cursor?: string, limit = 20): Effect.Effect<ShoppingPlanPage, ApiError | NetworkError | DecodeError> => {
+    const params = new URLSearchParams({ limit: String(limit) })
+    if (cursor) params.set('cursor', cursor)
+    return request(`/api/v1/plans?${params.toString()}`, { method: 'GET' }, ShoppingPlanPageSchema)
+  },
 
   getPlan: (id: string): Effect.Effect<ShoppingPlan, ApiError | NetworkError | DecodeError> =>
     request(`/api/v1/plans/${id}`, { method: 'GET' }, ShoppingPlanSchema),

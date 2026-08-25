@@ -18,7 +18,18 @@
     "itemName": "Nama Barang",
     "qty": "Jumlah (Qty)",
     "unit": "Satuan (Unit)",
-    "unitPlaceholder": "pcs, kg, btl"
+    "unitPlaceholder": "pcs, kg, btl",
+    "accountMenu": "Menu akun",
+    "profile": "Profil pengguna",
+    "settings": "Pengaturan",
+    "logout": "Keluar"
+  },
+  "navigation": {
+    "label": "Navigasi utama",
+    "plans": "Rencana",
+    "detail": "Detail",
+    "shop": "Belanja",
+    "receipt": "Struk"
   },
   "login": {
     "title": "Grocery Planner",

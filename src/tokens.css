@@ -26,9 +26,7 @@
   --color-mint:      oklch(80% 0.16 150);
   --color-lavender:  oklch(74% 0.16 305);
 
-  /* ── Focus ── */
-  --color-focus:     oklch(60% 0.18 235);
-
+  --color-focus:     var(--color-accent-deep);
   /* ── Glass (translucent for backdrops) ── */
   --color-paper-glass: oklch(97% 0.012 95 / 0.85);
   --color-ink-glass:   oklch(20% 0.012 250 / 0.85);
@@ -102,7 +100,7 @@
   --color-accent-3:  oklch(72% 0.20 18);
   --color-mint:      oklch(76% 0.14 150);
   --color-lavender:  oklch(70% 0.14 305);
-  --color-focus:     oklch(65% 0.16 235);
+  --color-focus:     var(--color-accent-deep);
   --color-paper-glass: oklch(16% 0.010 95 / 0.85);
   --color-ink-glass:   oklch(94% 0.006 95 / 0.85);
 }
