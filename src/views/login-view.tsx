@@ -10,10 +10,9 @@ export const LoginView: React.FC = () => {
   const { login, register } = useAuth()
   const { t } = useTranslation()
   const [isRegister, setIsRegister] = useState(false)
-  const [username, setUsername] = useState('')
+  const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
-  const [fullName, setFullName] = useState('')
-  const [householdName, setHouseholdName] = useState('')
+  const [name, setName] = useState('')
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
 
@@ -22,10 +21,10 @@ export const LoginView: React.FC = () => {
     setError(null)
     setLoading(true)
     if (isRegister) {
-      const res = await register(username, password, fullName, householdName)
-      if (!res.success) setError(res.error || t('login.register'))
+      const res = await register(email, password, name)
+      if (!res.success) setError(res.error || t('login.errorRegister'))
     } else {
-      const res = await login(username, password)
+      const res = await login(email, password)
       if (!res.success) setError(res.error || t('login.errorLogin'))
     }
     setLoading(false)
@@ -57,12 +56,9 @@ export const LoginView: React.FC = () => {
         )}
         <form onSubmit={handleSubmit} style={{ marginTop: '1.5rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
           {isRegister && (
-            <>
-              <Input label={t('login.fullName')} placeholder={t('login.fullNamePlaceholder')} value={fullName} onChange={(e) => setFullName(e.target.value)} required />
-              <Input label={t('login.household')} placeholder={t('login.householdPlaceholder')} value={householdName} onChange={(e) => setHouseholdName(e.target.value)} />
-            </>
+              <Input label={t('login.fullName')} placeholder={t('login.fullNamePlaceholder')} value={name} onChange={(e) => setName(e.target.value)} required />
           )}
-          <Input label={t('login.username')} placeholder={t('login.usernamePlaceholder')} value={username} onChange={(e) => setUsername(e.target.value)} required minLength={3} />
+          <Input label={t('login.email')} placeholder={t('login.emailPlaceholder')} type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
           <Input label={t('login.password')} type="password" placeholder={t('login.passwordPlaceholder')} value={password} onChange={(e) => setPassword(e.target.value)} required minLength={8} />
           <Button type="submit" size="lg" disabled={loading} style={{ width: '100%', marginTop: '0.5rem' }}>
             {loading ? t('common.submitting') : isRegister ? t('login.registerButton') : t('login.loginButton')}

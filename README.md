@@ -15,7 +15,7 @@ Smart grocery shopping planner with budget estimation, in-store checklist, and r
 
 | View | Purpose |
 |---|---|
-| **Login / Register** | Household-based auth with JWT |
+| **Login / Register** | Better Auth email/password with secure cookie sessions |
 | **Plan List** | Create and browse monthly shopping plans |
 | **Plan Detail** | Add items from catalog, track budget with visual bar |
 | **In-Store Checklist** | Tap-to-check items with offline queue + online sync |
@@ -27,7 +27,7 @@ Smart grocery shopping planner with budget estimation, in-store checklist, and r
 # Install dependencies
 bun install
 
-# Dev server (proxies /api to localhost:8080)
+# Dev server; Vite proxies /api to the local Worker at localhost:8787
 bun run dev
 
 # Production build
@@ -36,6 +36,20 @@ bun run build
 # Lint
 bun run lint
 ```
+
+## Production routing
+
+The frontend uses relative `/api/*` URLs. Production does not embed a backend URL in the frontend bundle. Cloudflare Pages serves `https://grocery.ibnua.li`, while the backend Worker owns the same-origin route `grocery.ibnua.li/api/*` through the route declared in `../backend-cf/wrangler.toml`.
+
+Required Cloudflare setup:
+
+1. Add `grocery.ibnua.li` as the Pages custom domain.
+2. Ensure `ibnua.li` is an active Cloudflare zone and DNS is proxied.
+3. Deploy the Worker from `../backend-cf`; Wrangler assigns the `/api/*` route.
+4. Deploy the frontend `dist/` directory to Pages.
+5. Keep `BETTER_AUTH_URL=https://grocery.ibnua.li` and `CORS_ORIGIN=https://grocery.ibnua.li` in the Worker production configuration.
+
+The Vite proxy is development-only and never controls production traffic.
 
 ## Project Structure
 

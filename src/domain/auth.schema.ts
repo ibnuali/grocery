@@ -2,23 +2,15 @@ import { Schema } from '@effect/schema'
 
 export const UserSchema = Schema.Struct({
   id: Schema.String,
-  username: Schema.String,
-  full_name: Schema.String,
-  created_at: Schema.String
+  name: Schema.String,
+  email: Schema.String,
+  created_at: Schema.optional(Schema.String)
 })
 export type User = Schema.Schema.Type<typeof UserSchema>
 
-export const HouseholdSchema = Schema.Struct({
-  id: Schema.String,
-  name: Schema.String,
-  created_at: Schema.String
-})
-export type Household = Schema.Schema.Type<typeof HouseholdSchema>
-
 export const AuthPayloadSchema = Schema.Struct({
-  token: Schema.String,
-  user: UserSchema,
-  household: HouseholdSchema
+  token: Schema.optional(Schema.String),
+  user: UserSchema
 })
 export type AuthPayload = Schema.Schema.Type<typeof AuthPayloadSchema>
 

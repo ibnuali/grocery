@@ -2,7 +2,7 @@ import { Schema } from '@effect/schema'
 
 export const MasterItemSchema = Schema.Struct({
   id: Schema.String,
-  household_id: Schema.String,
+  user_id: Schema.String,
   name: Schema.String,
   category: Schema.String,
   latest_price: Schema.Union(Schema.String, Schema.Number),

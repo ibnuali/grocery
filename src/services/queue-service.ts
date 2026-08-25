@@ -1,7 +1,12 @@
 import { openDB, type IDBPDatabase } from 'idb'
 import { Effect } from 'effect'
 import { request } from './api-client'
-import { PlanItemSchema } from '../domain/plan.schema'
+import { Schema } from '@effect/schema'
+
+const CheckItemResponseSchema = Schema.Struct({
+  item_id: Schema.String,
+  is_checked: Schema.Boolean
+})
 
 export interface MutationItem {
   id?: number
@@ -74,7 +79,7 @@ export const QueueService = {
             method: 'PATCH',
             body: JSON.stringify({ is_checked: item.isChecked })
           },
-          PlanItemSchema
+          CheckItemResponseSchema
         ).pipe(
           Effect.catchAll(() => Effect.succeed(null))
         )

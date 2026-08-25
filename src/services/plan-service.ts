@@ -1,4 +1,5 @@
 import { Effect } from 'effect'
+import { Schema } from '@effect/schema'
 import {
   ShoppingPlanSchema,
   ShoppingPlanListSchema,
@@ -56,20 +57,20 @@ export const PlanService = {
       PlanItemSchema
     ),
 
-  deleteItem: (planId: string, itemId: string): Effect.Effect<unknown, ApiError | NetworkError | DecodeError> =>
+  deleteItem: (planId: string, itemId: string): Effect.Effect<void, ApiError | NetworkError | DecodeError> =>
     request(
       `/api/v1/plans/${planId}/items/${itemId}`,
       { method: 'DELETE' },
-      PlanItemSchema
+      Schema.Struct({})
     ),
 
-  checkItem: (planId: string, itemId: string, isChecked: boolean): Effect.Effect<PlanItem, ApiError | NetworkError | DecodeError> =>
+  checkItem: (planId: string, itemId: string, isChecked: boolean): Effect.Effect<{ item_id: string; is_checked: boolean }, ApiError | NetworkError | DecodeError> =>
     request(
       `/api/v1/plans/${planId}/items/${itemId}/check`,
       {
         method: 'PATCH',
         body: JSON.stringify({ is_checked: isChecked })
       },
-      PlanItemSchema
+      Schema.Struct({ item_id: Schema.String, is_checked: Schema.Boolean })
     )
 }

@@ -16,7 +16,7 @@ import type { ShoppingPlan } from './domain/plan.schema'
 type ActiveView = 'list' | 'detail' | 'instore' | 'reconciliation'
 
 export const AppContent: React.FC = () => {
-  const { isAuthenticated, logout, user, household } = useAuth()
+  const { isAuthenticated, logout, user } = useAuth()
   const { toast } = useToast()
   const { t } = useTranslation()
   const [activeView, setActiveView] = useState<ActiveView>('list')
@@ -71,9 +71,7 @@ export const AppContent: React.FC = () => {
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
             <div style={{ fontSize: 'var(--text-xs)', color: 'var(--color-ink-3)', fontFamily: 'var(--font-body)' }}>
-              <span style={{ fontWeight: 600, color: 'var(--color-ink)' }}>{user?.full_name}</span>
-              <span style={{ margin: '0 0.375rem', color: 'var(--color-rule)' }}>•</span>
-              <span>{household?.name}</span>
+              <span style={{ fontWeight: 600, color: 'var(--color-ink)' }}>{user?.name}</span>
             </div>
             <ThemeToggle />
             <LanguageToggle />

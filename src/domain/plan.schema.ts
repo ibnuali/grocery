@@ -17,7 +17,7 @@ export type PlanItem = Schema.Schema.Type<typeof PlanItemSchema>
 
 export const ShoppingPlanSchema = Schema.Struct({
   id: Schema.String,
-  household_id: Schema.String,
+  user_id: Schema.String,
   title: Schema.String,
   budget_target: Schema.Union(Schema.String, Schema.Number),
   status: Schema.String,
