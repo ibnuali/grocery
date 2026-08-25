@@ -4,7 +4,6 @@ import { useAuth } from './hooks/use-auth'
 import { useToast } from './hooks/use-toast'
 import { useTranslation } from 'react-i18next'
 import { UserMenu } from './components/user-menu'
-import { MobileBottomNav } from './components/mobile-bottom-nav'
 import { LoginView } from './views/login-view'
 import { PlanListView } from './views/plan-list-view'
 import { PlanDetailView, PlanDetailSkeleton } from './views/plan-detail-view'
@@ -119,7 +118,6 @@ export const AppContent: React.FC = () => {
         {route.view === 'reconciliation' && activeRoutePlan && <ReconciliationView plan={activeRoutePlan} onSuccess={(updated) => { setActivePlan(updated); navigate({ view: 'detail', planId: updated.id }) }} onBack={() => { void loadPlanDetails(activeRoutePlan.id); navigate({ view: 'detail', planId: activeRoutePlan.id }) }} />}
       </main>
 
-      <MobileBottomNav activeView={route.view} planId={route.planId} onNavigate={(view) => { if (view === 'list') navigate({ view: 'list' }); else goToPlan(view) }} />
       <style>{`@keyframes pulse { 0%, 100% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.3); opacity: 0.7; } }`}</style>
     </div>
   )
