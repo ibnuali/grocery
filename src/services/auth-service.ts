@@ -1,7 +1,7 @@
 import { Effect } from 'effect'
 import { Schema } from '@effect/schema'
 import { AuthPayloadSchema, UserSchema, type AuthPayload } from '../domain/auth.schema'
-import { ApiError, NetworkError, authRequest, TokenStorage, type DecodeError } from './api-client'
+import { ApiError, NetworkError, apiUrl, authRequest, TokenStorage, type DecodeError } from './api-client'
 
 const persistAuth = (payload: AuthPayload) => {
   TokenStorage.set()
@@ -21,7 +21,7 @@ export const AuthService = {
   register: (email: string, password: string, name: string) => authCall('sign-up/email', { email, password, name }),
 
   logout: (): void => {
-    void fetch('/api/auth/sign-out', { method: 'POST', credentials: 'include' })
+    void fetch(apiUrl('/api/auth/sign-out'), { method: 'POST', credentials: 'include' })
     TokenStorage.remove()
     localStorage.removeItem('grocery_user')
   },

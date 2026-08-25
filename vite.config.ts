@@ -38,6 +38,7 @@ export default defineConfig({
   server: {
     port: 3321,
     proxy: {
+      // Development-only proxy. Production uses VITE_API_BASE_URL at build time.
       '/api': {
         target: 'http://localhost:8787',
         changeOrigin: true

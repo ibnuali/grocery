@@ -16,6 +16,12 @@ export class DecodeError extends Data.TaggedError('DecodeError')<{
   readonly message: string
 }> {}
 
+const API_BASE_URL = (import.meta.env.VITE_API_BASE_URL || '').replace(/\/$/, '')
+
+export function apiUrl(path: string): string {
+  return `${API_BASE_URL}${path}`
+}
+
 const AUTH_MARKER_KEY = 'grocery_authenticated'
 
 export const TokenStorage = {
@@ -36,7 +42,7 @@ function normalizeKeys(value: unknown): unknown {
 }
 
 export async function authRequest(url: string, options: RequestInit): Promise<unknown> {
-  const response = await fetch(url, {
+  const response = await fetch(apiUrl(url), {
     ...options,
     credentials: 'include',
     headers: { 'Content-Type': 'application/json', ...(options.headers as Record<string, string> | undefined) }
@@ -68,7 +74,7 @@ export function request<A, I>(
     }
 
     const response = yield* Effect.tryPromise({
-      try: () => fetch(url, { ...options, headers, credentials: 'include' }),
+      try: () => fetch(apiUrl(url), { ...options, headers, credentials: 'include' }),
       catch: (err) => new NetworkError({ message: err instanceof Error ? err.message : 'Network error' })
     })
 

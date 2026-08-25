@@ -14,7 +14,7 @@ Smart grocery shopping planner with budget estimation, in-store checklist, and r
 ## Features
 
 | View | Purpose |
-|---|---|
+| --- | --- |
 | **Login / Register** | Better Auth email/password with secure cookie sessions |
 | **Plan List** | Create and browse monthly shopping plans |
 | **Plan Detail** | Add items from catalog, track budget with visual bar |
@@ -37,19 +37,26 @@ bun run build
 bun run lint
 ```
 
-## Production routing
+## Production API integration
 
-The frontend uses relative `/api/*` URLs. Production does not embed a backend URL in the frontend bundle. Cloudflare Pages serves `https://grocery.ibnua.li`, while the backend Worker owns the same-origin route `grocery.ibnua.li/api/*` through the route declared in `../backend-cf/wrangler.toml`.
+The frontend and backend are separate Cloudflare Workers. The frontend must be built with the public backend origin:
 
-Required Cloudflare setup:
+```bash
+VITE_API_BASE_URL=...  bun run build
+```
 
-1. Add `grocery.ibnua.li` as the Pages custom domain.
-2. Ensure `ibnua.li` is an active Cloudflare zone and DNS is proxied.
-3. Deploy the Worker from `../backend-cf`; Wrangler assigns the `/api/*` route.
-4. Deploy the frontend `dist/` directory to Pages.
-5. Keep `BETTER_AUTH_URL=https://grocery.ibnua.li` and `CORS_ORIGIN=https://grocery.ibnua.li` in the Worker production configuration.
+All frontend requests then use `https://example.com/*`; local development falls back to relative `/api/*` and uses the Vite proxy to `localhost:8787`.
 
-The Vite proxy is development-only and never controls production traffic.
+Cloudflare Access must **not** protect the backend API routes used by the browser. Create a higher-priority Access bypass policy for `api.example.com/*` (including `/api/auth/*`), or remove Access from that API hostname. Authentication is provided by Better Auth sessions and application-level authorization. If Access remains enabled, requests are redirected to `/cdn-cgi/access/login` before reaching the Worker.
+
+Worker production settings:
+
+```toml
+BETTER_AUTH_URL = "https://api.example.com"
+CORS_ORIGIN = "https://example.com"
+```
+
+The frontend origin must be configured in Cloudflare Pages as the `VITE_API_BASE_URL` build environment variable; it is a public URL, not a secret.
 
 ## Project Structure
 
