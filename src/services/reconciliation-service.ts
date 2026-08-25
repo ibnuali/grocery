@@ -4,7 +4,7 @@ import { request, type ApiError, type NetworkError, type DecodeError } from './a
 
 export interface PlannedItemReconcile {
   id: string
-  actual_price: number
+  actual_price: string
   is_skipped: boolean
 }
 
@@ -13,7 +13,7 @@ export interface UnplannedItemReconcile {
   category: string
   qty: number
   unit: string
-  actual_price: number
+  actual_price: string
 }
 
 export const ReconciliationService = {

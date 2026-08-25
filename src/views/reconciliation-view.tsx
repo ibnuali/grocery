@@ -37,7 +37,7 @@ export const ReconciliationView: React.FC<ReconciliationViewProps> = ({ plan, on
 
   const handleAddUnplannedSubmit = (e: React.FormEvent) => {
     e.preventDefault(); if (!unplannedName.trim()) return
-    setUnplannedItems((prev) => [...prev, { _key: crypto.randomUUID(), item_name: unplannedName.trim(), category: unplannedCategory.trim() || 'General', qty: Number(unplannedQty) || 1, unit: unplannedUnit.trim() || 'pcs', actual_price: Number(unplannedPrice) || 0 }])
+    setUnplannedItems((prev) => [...prev, { _key: crypto.randomUUID(), item_name: unplannedName.trim(), category: unplannedCategory.trim() || 'General', qty: Number(unplannedQty) || 1, unit: unplannedUnit.trim() || 'pcs', actual_price: unplannedPrice.trim() || '0' }])
     setIsAddUnplannedOpen(false); setUnplannedName(''); setUnplannedQty('1'); setUnplannedUnit('pcs'); setUnplannedPrice('0')
   }
 
@@ -48,7 +48,7 @@ export const ReconciliationView: React.FC<ReconciliationViewProps> = ({ plan, on
   const variance = grandTotalActual - totalEstimated
   const handleSubmitReconciliation = async () => {
     setSubmitting(true); setError(null)
-    const plannedPayload: PlannedItemReconcile[] = Object.entries(plannedState).map(([id, val]) => ({ id, actual_price: Number(val.actual_price) || 0, is_skipped: val.is_skipped }))
+    const plannedPayload: PlannedItemReconcile[] = Object.entries(plannedState).map(([id, val]) => ({ id, actual_price: val.actual_price.trim() || '0', is_skipped: val.is_skipped }))
     const prog = ReconciliationService.reconcile(plan.id, plannedPayload, unplannedItems.map(({ _key, ...rest }) => rest)).pipe(
       Effect.map((updatedPlan) => onSuccess(updatedPlan)),
       Effect.catchAll((err) => { const message = err instanceof Error ? err.message : t('reconciliation.errorSave'); setError(message); return Effect.succeed(undefined) })
@@ -159,7 +159,7 @@ export const ReconciliationView: React.FC<ReconciliationViewProps> = ({ plan, on
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
                   <div style={{ textAlign: 'right' }}>
-                    <div style={{ fontSize: 'var(--text-sm)', fontWeight: 800, color: 'var(--color-accent-deep)', ...mono }}>{formatCurrency(u.qty * u.actual_price)}</div>
+                    <div style={{ fontSize: 'var(--text-sm)', fontWeight: 800, color: 'var(--color-accent-deep)', ...mono }}>{formatCurrency(Number(u.qty) * Number(u.actual_price))}</div>
                   </div>
                   <button type="button" onClick={() => setUnplannedItems((prev) => prev.filter((item) => item._key !== u._key))} style={{ fontSize: 'var(--text-xs)', fontWeight: 600, color: 'var(--color-accent-3)', background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'var(--font-body)' }}>{t('common.delete')}</button>
                 </div>
