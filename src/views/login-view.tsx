@@ -1,95 +1,116 @@
-import React, { useEffect, useState } from 'react'
-import { ArrowRight, ShoppingCart } from 'lucide-react'
+import React from 'react'
+import { ArrowRight, Check, ReceiptText, ShoppingBasket, ShoppingCart, WifiOff } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { LanguageToggle } from '../components/language-toggle'
-
+import { ThemeToggle } from '../components/theme-toggle'
 export const LoginView: React.FC = () => {
   const { t } = useTranslation()
-  const [scrolled, setScrolled] = useState(false)
-
-  useEffect(() => {
-    const handleScroll = () => { setScrolled(window.scrollY > 24) }
-    window.addEventListener('scroll', handleScroll, { passive: true })
-    return () => window.removeEventListener('scroll', handleScroll)
-  }, [])
 
   return (
-    <>
-      {/* N5 · Floating pill */}
-      <nav className={`nav-pill${scrolled ? ' nav-pill--scrolled' : ''}`} aria-label={t('navigation.label')}>
-        <a className="nav-pill__wordmark" href="#top" aria-label="Grocery Planner home">
-          <span className="nav-pill__mark"><ShoppingCart size={14} strokeWidth={2.5} /></span>
-          <span className="nav-pill__name">Grocery Planner</span>
+    <div className="landing-page">
+      <header className="landing-nav" aria-label={t('navigation.label')}>
+        <a className="landing-wordmark" href="#top" aria-label="Grocery Planner home">
+          <span className="landing-wordmark__mark"><ShoppingCart size={17} strokeWidth={2.5} /></span>
+          <span>Grocery Planner</span>
         </a>
-        <div className="nav-pill__links">
-          <a href="#how-it-works">{t('login.navHowItWorks')}</a>
-          <Link to="/login">{t('login.navSignIn')}</Link>
+        <div className="landing-nav__actions">
+          <ThemeToggle />
+          <LanguageToggle />
+          <Link className="landing-nav__signin" to="/login">{t('login.navSignIn')}</Link>
         </div>
-        <LanguageToggle />
-      </nav>
+      </header>
 
-      <main className="landing-page">
-        {/* H1 · Marquee hero */}
-        <section className="marquee-hero" id="top">
-          <h1 className="marquee-hero__display">{t('login.heroTitle')}</h1>
-          <p className="marquee-hero__description">{t('login.heroDescription')}</p>
-          <Link className="marquee-hero__cta" to="/login">
-            {t('login.heroSecondary')} <ArrowRight size={15} />
-          </Link>
+      <main>
+        <section className="split-hero" id="top">
+          <div className="split-hero__copy">
+            <h1>{t('login.heroTitle')}</h1>
+            <p>{t('login.heroDescription')}</p>
+            <div className="split-hero__actions">
+              <Link className="landing-cta landing-cta--primary" to="/register">
+                {t('login.heroPrimary')} <ArrowRight size={16} />
+              </Link>
+              <a className="landing-cta landing-cta--quiet" href="#how-it-works">{t('login.heroSecondary')}</a>
+            </div>
+          </div>
+
+          <div className="grocery-board" aria-label={t('login.previewLabel')}>
+            <div className="grocery-board__topline">
+              <span>{t('login.previewLabel')}</span>
+              <span className="grocery-board__status"><span aria-hidden="true" />{t('login.previewStatus')}</span>
+            </div>
+            <h2>{t('login.previewTitle')}</h2>
+            <div className="grocery-board__list">
+              {[t('login.previewItemOne'), t('login.previewItemTwo'), t('login.previewItemThree')].map((item, index) => (
+                <div className="grocery-board__item" key={item}>
+                  <span className={index < 2 ? 'is-checked' : ''}>{index < 2 && <Check size={13} />}</span>
+                  <span>{item}</span>
+                </div>
+              ))}
+            </div>
+            <div className="grocery-board__budget">
+              <span>{t('login.previewBudget')}</span>
+              <strong>{t('login.previewPending')}</strong>
+            </div>
+          </div>
         </section>
 
-        {/* Mid-page marquee divider */}
-        <div className="marquee-divider" aria-hidden="true">
-          <div className="marquee-divider__track">
-            <span>{t('login.marqueeTicker')}</span>
-            <span>{t('login.marqueeTicker')}</span>
-          </div>
-        </div>
-
-        {/* F4 · Step sequence */}
-        <section className="landing-workflow" id="how-it-works">
-          <div className="landing-workflow__head">
+        <section className="workflow-studio" id="how-it-works">
+          <div className="workflow-studio__intro">
             <h2>{t('login.workflowTitle')}</h2>
             <p>{t('login.workflowDescription')}</p>
           </div>
-          <ol className="step-sequence">
-            <li className="step-sequence__item">
-              <span className="step-sequence__number">1</span>
-              <div className="step-sequence__body">
-                <h3>{t('login.stepPlan')}</h3>
-                <p>{t('login.stepPlanDescription')}</p>
-              </div>
-            </li>
-            <li className="step-sequence__item">
-              <span className="step-sequence__number">2</span>
-              <div className="step-sequence__body">
-                <h3>{t('login.stepShop')}</h3>
-                <p>{t('login.stepShopDescription')}</p>
-              </div>
-            </li>
-            <li className="step-sequence__item">
-              <span className="step-sequence__number">3</span>
-              <div className="step-sequence__body">
-                <h3>{t('login.stepReconcile')}</h3>
-                <p>{t('login.stepReconcileDescription')}</p>
-              </div>
-            </li>
-          </ol>
-        </section>
 
-        {/* Ft8 · Marquee footer */}
-        <footer className="foot-marquee" aria-label="Footer">
-          <div className="foot-marquee__track" aria-hidden="true">
-            <span>{t('login.footerTicker')}</span>
-            <span>{t('login.footerTicker')}</span>
-          </div>
-          <div className="foot-marquee__meta">
-            <span className="foot-marquee__wordmark">Grocery Planner</span>
-            <span>{t('login.footerMeta')}</span>
-          </div>
-        </footer>
+          <article className="workflow-band">
+            <div className="workflow-band__copy">
+              <span className="workflow-band__step">01</span>
+              <h3>{t('login.stepPlan')}</h3>
+              <p>{t('login.stepPlanDescription')}</p>
+            </div>
+            <div className="workflow-band__proof workflow-band__proof--plan" aria-hidden="true">
+              <ShoppingBasket size={28} />
+              <span className="proof-line proof-line--long" />
+              <span className="proof-line" />
+              <span className="proof-line proof-line--short" />
+            </div>
+          </article>
+
+          <article className="workflow-band workflow-band--reverse">
+            <div className="workflow-band__copy">
+              <span className="workflow-band__step">02</span>
+              <h3>{t('login.stepShop')}</h3>
+              <p>{t('login.stepShopDescription')}</p>
+            </div>
+            <div className="workflow-band__proof workflow-band__proof--shop" aria-hidden="true">
+              <WifiOff size={24} />
+              <div className="proof-checks"><Check size={18} /><Check size={18} /><span /></div>
+            </div>
+          </article>
+
+          <article className="workflow-band">
+            <div className="workflow-band__copy">
+              <span className="workflow-band__step">03</span>
+              <h3>{t('login.stepReconcile')}</h3>
+              <p>{t('login.stepReconcileDescription')}</p>
+            </div>
+            <div className="workflow-band__proof workflow-band__proof--receipt" aria-hidden="true">
+              <ReceiptText size={28} />
+              <span className="receipt-rule" />
+              <span className="receipt-rule receipt-rule--short" />
+              <span className="receipt-total" />
+            </div>
+          </article>
+        </section>
       </main>
-    </>
+
+      <footer className="statement-footer">
+        <p>{t('login.footerStatement')}</p>
+        <div className="statement-footer__meta">
+          <span>Grocery Planner</span>
+          <Link to="/register">{t('login.heroPrimary')} <ArrowRight size={14} /></Link>
+          <span>{t('login.footerMeta')}</span>
+        </div>
+      </footer>
+    </div>
   )
 }

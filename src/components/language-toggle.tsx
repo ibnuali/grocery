@@ -18,12 +18,14 @@ export const LanguageToggle: React.FC = () => {
   return (
     <button
       type="button"
+      className="language-toggle"
       onClick={cycle}
       title={`Language: ${labels[i18n.language] || 'ID'} (click to switch)`}
       style={{
         display: 'inline-flex',
         alignItems: 'center',
         gap: '0.375rem',
+        minHeight: '2.75rem',
         borderRadius: 'var(--radius-pill)',
         padding: '0.375rem 0.625rem',
         fontSize: 'var(--text-xs)',

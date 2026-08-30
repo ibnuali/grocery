@@ -10,6 +10,7 @@ interface AuthContextType {
   isAuthenticated: boolean
   login: (email: string, password: string) => Promise<{ success: boolean; error?: string }>
   register: (email: string, password: string, name: string) => Promise<{ success: boolean; error?: string }>
+  updateUser: (user: User) => void
   logout: () => void
 }
 
@@ -53,6 +54,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return await Effect.runPromise(program)
   }
 
+  const updateUser = (nextUser: User) => {
+    setUser(nextUser)
+    localStorage.setItem('grocery_user', JSON.stringify(nextUser))
+  }
+
   const logout = () => {
     AuthService.logout()
     setUser(null)
@@ -60,7 +66,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }
 
   return (
-    <AuthContext.Provider value={{ user, token, isAuthenticated: !!token, login, register, logout }}>
+    <AuthContext.Provider value={{ user, token, isAuthenticated: !!token, login, register, updateUser, logout }}>
       {children}
     </AuthContext.Provider>
   )

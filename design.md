@@ -8,12 +8,11 @@ system needs to grow.
 playful
 
 ## Macrostructure family
-This is a functional app, not a marketing site. No hero macrostructures apply.
-All views share a single app-shell pattern: minimal top bar + content area.
+The product uses one shared Hum system across marketing and app surfaces.
 
+- Marketing landing: Split Studio with H2 split diptych, alternating proof bands, N9 edge-aligned navigation, and Ft5 statement footer
 - App views: centred single-column (max-w-2xl), card-based sections, floating action bars
-- Login: centred card on tinted background
-
+- Authentication: split composition with a quiet product-story panel and a focused form panel; dedicated `/login` and `/register` routes
 ## Theme — Hum (playful, multi-accent)
 
 - `--color-paper`     oklch(97% 0.012 95)   — warm cream, neutral base

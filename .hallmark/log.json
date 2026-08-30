@@ -1,5 +1,16 @@
 [
   {
+    "date": "2026-08-30",
+    "macrostructure": "Split Studio",
+    "theme": "Hum",
+    "enrichment": "Tier-A CSS product proof",
+    "brief": "Grocery Planner landing, sign in, and register redesign",
+    "scope": "app",
+    "nav": "N9 edge-aligned minimal",
+    "footer": "Ft5 statement",
+    "theme_axes": "light / rounded-sans / multi-accent"
+  },
+  {
     "date": "2026-08-25",
     "macrostructure": "Marquee Hero",
     "theme": "Hum",

@@ -8,6 +8,7 @@ import { ThemeToggle } from './theme-toggle'
 interface UserMenuProps {
   user: User
   onLogout: () => void
+  onSettings: () => void
 }
 
 const getInitials = (name: string) => {
@@ -20,8 +21,7 @@ const getInitials = (name: string) => {
 
   return initials.toUpperCase() || '?'
 }
-
-export const UserMenu: React.FC<UserMenuProps> = ({ user, onLogout }) => {
+export const UserMenu: React.FC<UserMenuProps> = ({ user, onLogout, onSettings }) => {
   const { t } = useTranslation()
   const [isOpen, setIsOpen] = useState(false)
   const menuRef = useRef<HTMLDivElement>(null)
@@ -47,6 +47,11 @@ export const UserMenu: React.FC<UserMenuProps> = ({ user, onLogout }) => {
   const handleLogout = () => {
     setIsOpen(false)
     onLogout()
+  }
+
+  const handleSettings = () => {
+    setIsOpen(false)
+    onSettings()
   }
 
   return (
@@ -144,6 +149,18 @@ export const UserMenu: React.FC<UserMenuProps> = ({ user, onLogout }) => {
               <LanguageToggle />
             </div>
           </div>
+
+          <button
+            type="button"
+            role="menuitem"
+            onClick={handleSettings}
+            style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', width: '100%', border: 0, borderRadius: 'var(--radius-input)', padding: '0.65rem 0.75rem', color: 'var(--color-ink)', background: 'transparent', cursor: 'pointer', fontFamily: 'var(--font-body)', fontSize: 'var(--text-sm)', fontWeight: 700, textAlign: 'left' }}
+            onMouseEnter={(event) => { event.currentTarget.style.background = 'var(--color-paper-2)' }}
+            onMouseLeave={(event) => { event.currentTarget.style.background = 'transparent' }}
+          >
+            <Settings aria-hidden="true" style={{ width: '1rem', height: '1rem' }} />
+            {t('common.profile')}
+          </button>
 
           <div aria-hidden="true" style={{ height: '1px', margin: '0.25rem 0.5rem', background: 'var(--color-rule)' }} />
 

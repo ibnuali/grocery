@@ -27,6 +27,9 @@
   --color-lavender:  oklch(74% 0.16 305);
 
   --color-focus:     var(--color-accent-deep);
+  --color-accent-ink: var(--color-ink);
+  --color-shadow:     oklch(20% 0.012 250 / 0.12);
+  --color-shadow-deep: oklch(20% 0.012 250 / 0.2);
   /* ── Glass (translucent for backdrops) ── */
   --color-paper-glass: oklch(97% 0.012 95 / 0.85);
   --color-ink-glass:   oklch(20% 0.012 250 / 0.85);
@@ -73,7 +76,9 @@
 
   /* ── Durations ── */
   --dur-instant: 80ms;
+  --dur-micro:   120ms;
   --dur-short:   180ms;
+  --dur-theme:   220ms;
   --dur-med:     280ms;
   --dur-long:    420ms;
 

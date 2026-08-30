@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react'
 import { Effect } from 'effect'
 import { useTranslation } from 'react-i18next'
+import { useLocation, useNavigate } from 'react-router-dom'
 import { PlanService } from '../services/plan-service'
 import { useToast } from '../hooks/use-toast'
 import { Modal } from '../components/ui/modal'
@@ -8,6 +9,7 @@ import { Input } from '../components/ui/input'
 import { Button } from '../components/ui/button'
 import type { ShoppingPlan } from '../domain/plan.schema'
 import { Plus, Calendar, ChevronRight, ShoppingBag } from 'lucide-react'
+import { isCreatePlanRequest } from '../lib/mobile-navigation'
 import { formatCurrency } from '../i18n/format'
 
 export const PlanListSkeleton: React.FC = () => {
@@ -46,6 +48,14 @@ export const PlanListView: React.FC<PlanListViewProps> = ({ onSelectPlan }) => {
   const loadingRef = useRef(false)
   const nextCursorRef = useRef<string | null>(null)
   const sentinelRef = useRef<HTMLDivElement | null>(null)
+  const location = useLocation()
+  const navigate = useNavigate()
+
+  useEffect(() => {
+    if (!isCreatePlanRequest(location.search)) return
+    setIsCreateOpen(true)
+    navigate(location.pathname, { replace: true })
+  }, [location.pathname, location.search, navigate])
 
   const loadPlans = useCallback(async (cursor?: string) => {
     const isInitial = cursor === undefined
@@ -129,7 +139,7 @@ export const PlanListView: React.FC<PlanListViewProps> = ({ onSelectPlan }) => {
           <h1 style={{ fontSize: 'var(--text-2xl)', fontWeight: 700, color: 'var(--color-ink)', fontFamily: 'var(--font-display)', letterSpacing: '-0.025em', lineHeight: 1.2 }}>{t('planList.title')}</h1>
           <p style={{ fontSize: 'var(--text-xs)', color: 'var(--color-ink-3)', fontFamily: 'var(--font-body)', marginTop: '0.25rem' }}>{t('planList.subtitle')}</p>
         </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+        <div className="plan-list-create-action" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
           <Button size="sm" onClick={() => setIsCreateOpen(true)}><Plus style={{ height: '1rem', width: '1rem' }} /><span>{t('planList.createPlan')}</span></Button>
         </div>
       </div>
@@ -145,7 +155,7 @@ export const PlanListView: React.FC<PlanListViewProps> = ({ onSelectPlan }) => {
             <h3 style={{ fontSize: 'var(--text-base)', fontWeight: 700, color: 'var(--color-ink)', fontFamily: 'var(--font-display)' }}>{t('planList.emptyTitle')}</h3>
             <p style={{ fontSize: 'var(--text-xs)', color: 'var(--color-ink-3)', maxWidth: '20rem', margin: '0.25rem auto 0', fontFamily: 'var(--font-body)', lineHeight: 1.5 }}>{t('planList.emptyDesc')}</p>
           </div>
-          <Button size="sm" onClick={() => setIsCreateOpen(true)} style={{ marginTop: '0.5rem' }}><Plus style={{ height: '1rem', width: '1rem' }} /><span>{t('planList.createFirst')}</span></Button>
+          <Button className="plan-list-create-empty-action" size="sm" onClick={() => setIsCreateOpen(true)} style={{ marginTop: '0.5rem' }}><Plus style={{ height: '1rem', width: '1rem' }} /><span>{t('planList.createFirst')}</span></Button>
         </div>
       ) : (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>

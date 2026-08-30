@@ -14,8 +14,8 @@ export const PlanDetailSkeleton: React.FC = () => (
   <div className="plan-detail-skeleton" role="status" aria-live="polite" aria-label="Loading plan details">
     <span className="sr-only">Loading plan details</span>
     <div className="plan-detail-skeleton__topline">
-      <span className="skeleton-block skeleton-block--back" />
-      <span className="skeleton-block skeleton-block--date" />
+      <span className="plan-detail-skeleton__back skeleton-block skeleton-block--back" />
+      <span className="plan-detail-skeleton__date skeleton-block skeleton-block--date" />
     </div>
     <section className="plan-detail-skeleton__card">
       <div className="plan-detail-skeleton__heading">
@@ -128,13 +128,13 @@ export const PlanDetailView: React.FC<PlanDetailViewProps> = ({
   }
 
   return (
-    <div style={{ maxWidth: '40rem', margin: '0 auto', padding: '1.5rem 1rem', display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.5rem' }}>
-        <button type="button" onClick={onBack} style={{ fontSize: 'var(--text-xs)', fontWeight: 600, color: 'var(--color-ink-3)', background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'var(--font-body)', transition: 'color 180ms' }}
+    <div className="plan-detail-page" style={{ maxWidth: '40rem', margin: '0 auto', padding: '1.5rem 1rem', display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+      <div className="plan-detail-header" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.5rem' }}>
+        <button className="plan-detail-header__back" type="button" onClick={onBack} style={{ fontSize: 'var(--text-xs)', fontWeight: 600, color: 'var(--color-ink-3)', background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'var(--font-body)', transition: 'color 180ms' }}
           onMouseEnter={(e) => { e.currentTarget.style.color = 'var(--color-ink)' }} onMouseLeave={(e) => { e.currentTarget.style.color = 'var(--color-ink-3)' }}>
           {t('planDetail.backToList')}
         </button>
-        <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.375rem', fontSize: 'var(--text-xs)', color: 'var(--color-ink-3)', fontFamily: 'var(--font-body)' }}>
+        <span className="plan-detail-header__date" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.375rem', fontSize: 'var(--text-xs)', color: 'var(--color-ink-3)', fontFamily: 'var(--font-body)' }}>
           <Calendar style={{ height: '0.875rem', width: '0.875rem' }} />{shoppingDate}
         </span>
       </div>
@@ -143,7 +143,6 @@ export const PlanDetailView: React.FC<PlanDetailViewProps> = ({
         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
           <div>
             <h1 style={{ fontSize: 'var(--text-xl)', fontWeight: 700, color: 'var(--color-ink)', fontFamily: 'var(--font-display)', letterSpacing: '-0.025em' }}>{planTitle}</h1>
-            <p style={{ fontSize: 'var(--text-xs)', color: 'var(--color-ink-3)', marginTop: '0.25rem', fontFamily: 'var(--font-body)' }}>{t('planDetail.budgetTarget')} <span style={{ fontWeight: 600, color: 'var(--color-ink)', fontFamily: 'var(--font-mono)', fontVariantNumeric: 'tabular-nums' }}>{formatCurrency(budgetTarget)}</span></p>
           </div>
           <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
             <Button variant="outline" size="sm" onClick={handleEditOpen}><Pencil style={{ height: '0.875rem', width: '0.875rem' }} /><span>{t('planDetail.editPlan')}</span></Button>
@@ -164,7 +163,7 @@ export const PlanDetailView: React.FC<PlanDetailViewProps> = ({
         </div>
       </div>
 
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+      <div className="plan-detail-page__items" style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <h2 style={{ fontSize: 'var(--text-sm)', fontWeight: 700, color: 'var(--color-ink)', fontFamily: 'var(--font-display)' }}>{t('planDetail.itemList')} ({items.length})</h2>
           <Button size="sm" onClick={() => setIsAddOpen(true)}><Plus style={{ height: '1rem', width: '1rem' }} /><span>{t('common.addItem')}</span></Button>
@@ -177,7 +176,7 @@ export const PlanDetailView: React.FC<PlanDetailViewProps> = ({
             <Button variant="outline" size="sm" onClick={() => setIsAddOpen(true)} style={{ marginTop: '1rem' }}><Plus style={{ height: '1rem', width: '1rem' }} /><span>{t('planDetail.addFirstItem')}</span></Button>
           </div>
         ) : (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+          <div className="plan-detail-page__items-list" style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
             {items.map((item) => {
               const subtotal = Number(item.qty) * Number(item.estimated_price)
               return (

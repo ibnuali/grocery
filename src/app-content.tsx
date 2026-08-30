@@ -4,19 +4,21 @@ import { useAuth } from './hooks/use-auth'
 import { LoginView } from './views/login-view'
 import { LoginPage } from './views/login-page'
 import { AuthenticatedShell } from './components/authenticated-shell'
+import { publicAuthMode } from './lib/routes'
 
 export const AppContent: React.FC = () => {
-  const { isAuthenticated, logout, user } = useAuth()
+  const { isAuthenticated, logout, updateUser, user } = useAuth()
   const location = useLocation()
+  const authMode = publicAuthMode(location.pathname)
 
   if (!isAuthenticated) {
-    if (location.pathname === '/login') return <LoginPage />
+    if (authMode) return <LoginPage mode={authMode} />
     return <LoginView />
   }
 
-  if (location.pathname === '/' || location.pathname === '/login') {
+  if (location.pathname === '/' || authMode) {
     return <Navigate replace to="/plans" />
   }
 
-  return <AuthenticatedShell logout={logout} user={user} />
+  return <AuthenticatedShell logout={logout} user={user} onUserUpdated={updateUser} />
 }
