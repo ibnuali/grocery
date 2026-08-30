@@ -11,6 +11,7 @@ import type { ShoppingPlan } from '../domain/plan.schema'
 import { Plus, Calendar, ChevronRight, ShoppingBag } from 'lucide-react'
 import { isCreatePlanRequest } from '../lib/mobile-navigation'
 import { formatCurrency } from '../i18n/format'
+import { PageHeader } from '../components/page-header'
 
 export const PlanListSkeleton: React.FC = () => {
   const { t } = useTranslation()
@@ -133,16 +134,19 @@ export const PlanListView: React.FC<PlanListViewProps> = ({ onSelectPlan }) => {
   }
 
   return (
-    <div style={{ maxWidth: '40rem', margin: '0 auto', padding: '2rem 1rem', display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-      <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.75rem' }}>
-        <div style={{ flex: '1 1 auto', minWidth: '12rem' }}>
-          <h1 style={{ fontSize: 'var(--text-2xl)', fontWeight: 700, color: 'var(--color-ink)', fontFamily: 'var(--font-display)', letterSpacing: '-0.025em', lineHeight: 1.2 }}>{t('planList.title')}</h1>
-          <p style={{ fontSize: 'var(--text-xs)', color: 'var(--color-ink-3)', fontFamily: 'var(--font-body)', marginTop: '0.25rem' }}>{t('planList.subtitle')}</p>
-        </div>
-        <div className="plan-list-create-action" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-          <Button size="sm" onClick={() => setIsCreateOpen(true)}><Plus style={{ height: '1rem', width: '1rem' }} /><span>{t('planList.createPlan')}</span></Button>
-        </div>
-      </div>
+    <div className="plan-list-page" style={{ maxWidth: '40rem', margin: '0 auto', padding: '2rem 1rem', display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+      <PageHeader
+        title={t('planList.title')}
+        subtitle={t('planList.subtitle')}
+        action={(
+          <div className="plan-list-create-action" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <Button size="sm" onClick={() => setIsCreateOpen(true)}>
+              <Plus style={{ height: '1rem', width: '1rem' }} />
+              <span>{t('planList.createPlan')}</span>
+            </Button>
+          </div>
+        )}
+      />
 
       {loading ? (
         <PlanListSkeleton />

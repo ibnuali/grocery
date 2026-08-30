@@ -21,6 +21,7 @@ import { useTranslation } from 'react-i18next'
 import { Effect } from 'effect'
 import { Input } from '../components/ui/input'
 import { Button } from '../components/ui/button'
+import { PageHeader } from '../components/page-header'
 import { ApiError } from '../services/api-client'
 import { AccountService } from '../services/account-service'
 import { validatePasswordChange, validateProfileName } from '../lib/account-validation'
@@ -195,16 +196,13 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ user, onUserUpdated,
 
   return (
     <div className={`settings-page${screen === 'profile' ? ' settings-page--profile' : ''}${resolvedTheme === 'light' ? ' settings-page--light' : ''}`}>
-      <button type="button" onClick={handlePageBack} className="settings-page__back" aria-label={t('common.back')}>
-        <ArrowLeft aria-hidden="true" />
-        <span>{t('common.back')}</span>
-      </button>
 
-      <header className="settings-page__header">
-        <p className="settings-page__eyebrow">{t('settings.eyebrow')}</p>
-        <h1>{screen === 'profile' ? t('settings.editProfileTitle') : t('settings.title')}</h1>
-        <p className="settings-page__subtitle">{t('settings.subtitle')}</p>
-      </header>
+      <PageHeader
+        className="settings-page__header"
+        eyebrow={t('settings.eyebrow')}
+        title={screen === 'profile' ? t('settings.editProfileTitle') : t('settings.title')}
+        subtitle={t('settings.subtitle')}
+      />
 
       {screen === 'menu' ? (
         <>

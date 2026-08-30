@@ -1301,6 +1301,13 @@
   .authenticated-main {
     padding-bottom: 6.5rem;
   }
+  .plan-list-page {
+    padding-top: calc(0.9rem + env(safe-area-inset-top, 0px)) !important;
+    padding-right: 1.25rem !important;
+    padding-bottom: max(1.5rem, env(safe-area-inset-bottom, 0px)) !important;
+    padding-left: 1.25rem !important;
+  }
+
 
   .plan-list-create-action,
   .plan-list-create-empty-action {
@@ -1407,6 +1414,64 @@
     transition: none;
   }
 }
+.page-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+.page-header__leading {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.page-header__leading + .page-header__copy {
+  min-width: 0;
+}
+
+
+.page-header__copy {
+  flex: 1 1 auto;
+  min-width: 12rem;
+}
+
+.page-header__eyebrow {
+  margin: 0;
+  color: var(--color-accent-deep);
+  font: 800 0.6875rem var(--font-mono);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.page-header h1 {
+  margin: 0;
+  color: var(--color-ink);
+  font: 700 var(--text-2xl) var(--font-display);
+  letter-spacing: -0.025em;
+  line-height: 1.2;
+}
+
+.page-header__subtitle {
+  margin: 0.25rem 0 0;
+  color: var(--color-ink-3);
+  font: var(--text-xs) var(--font-body);
+  line-height: 1.5;
+}
+
+.page-header__actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+@media (max-width: 39.999rem) {
+  .page-header__copy {
+    min-width: 0;
+  }
+}
+
 .settings-page {
   width: 100%;
   max-width: 40rem;
@@ -1420,23 +1485,10 @@
   color: var(--color-ink);
   background: var(--color-paper);
 }
-
-.settings-page__back {
-  display: inline-flex;
-  align-items: center;
-  align-self: flex-start;
-  gap: 0.4rem;
-  border: 0;
-  padding: 0;
-  color: var(--color-ink-2);
-  background: transparent;
-  cursor: pointer;
-  font: 700 var(--text-sm) var(--font-body);
-}
-
-.settings-page__back svg {
-  width: 1rem;
-  height: 1rem;
+.settings-page__header {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1.25rem;
 }
 
 .settings-page__back:focus-visible {
@@ -1445,27 +1497,6 @@
   border-radius: 0.25rem;
 }
 
-.settings-page__header h1 {
-  margin: 0.35rem 0 0;
-  color: var(--color-ink);
-  font: 400 var(--text-2xl) var(--font-display);
-  letter-spacing: -0.035em;
-}
-
-.settings-page__eyebrow {
-  margin: 0;
-  color: var(--color-accent-deep);
-  font: 800 0.6875rem var(--font-mono);
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-}
-
-.settings-page__subtitle {
-  margin: 0.45rem 0 0;
-  color: var(--color-ink-3);
-  font-size: var(--text-sm);
-  line-height: 1.5;
-}
 
 .settings-card {
   display: flex;
@@ -1576,26 +1607,20 @@
     --color-mint: oklch(82% 0.16 150);
     max-width: none;
     min-height: 100dvh;
-    padding: 0.9rem 1.25rem max(1.5rem, env(safe-area-inset-bottom, 0px));
+    padding: calc(0.9rem + env(safe-area-inset-top, 0px)) 1.25rem max(1.5rem, env(safe-area-inset-bottom, 0px));
     gap: 0.75rem;
     background: var(--settings-bg);
   }
 
   .settings-page__back {
-    position: absolute;
-    top: 0.9rem;
-    left: 1.25rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
     width: 2.25rem;
     height: 2.25rem;
-    justify-content: center;
     border-radius: 50%;
     color: var(--settings-ink);
     background: var(--settings-card-raised);
-  }
-
-  .settings-page__back svg {
-    width: 1.1rem;
-    height: 1.1rem;
   }
 
   .settings-page__back span {
@@ -1607,22 +1632,31 @@
     white-space: nowrap;
   }
 
-  .settings-page__header {
-    padding: 0.15rem 2.75rem 1rem;
-    text-align: center;
+  .settings-page__back svg {
+    width: 1.1rem;
+    height: 1.1rem;
   }
 
-  .settings-page__eyebrow,
-  .settings-page__subtitle {
+
+  .settings-page__header {
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 0.75rem;
+    padding: 0 0 1rem;
+    text-align: left;
+  }
+
+  .page-header__eyebrow {
     display: none;
   }
 
-  .settings-page__header h1 {
-    margin: 0;
-    color: var(--settings-ink);
-    font-size: 1rem;
-    font-weight: 700;
-    letter-spacing: -0.02em;
+  .page-header__subtitle {
+    display: block;
+    margin: 0.25rem 0 0;
+    color: var(--settings-muted);
+    font-family: var(--font-body);
+    font-size: var(--text-xs);
+    line-height: 1.5;
   }
 
   .settings-card {
@@ -1808,6 +1842,7 @@ button.settings-row:hover {
 
 .settings-row__label {
   min-width: 0;
+  font-size: 0.8rem;
   flex: 1;
 }
 
@@ -1820,7 +1855,7 @@ button.settings-row:hover {
 
 .settings-row__value {
   color: var(--color-ink-3);
-  font-size: 0.6rem;
+  font-size: 0.8rem;
   font-weight: 700;
 }
 
@@ -2015,7 +2050,6 @@ button.settings-row:hover {
   .settings-password-disclosure {
     border: 1px solid var(--settings-line);
     border-radius: 1rem;
-    background: var(--color-paper-2);
   }
 
   .settings-profile-row {
