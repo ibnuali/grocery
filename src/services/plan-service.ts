@@ -38,13 +38,33 @@ export const PlanService = {
       ShoppingPlanSchema
     ),
 
+  updatePlan: (
+    planId: string,
+    title: string,
+    budgetTarget: number,
+    shoppingDate: string
+  ): Effect.Effect<ShoppingPlan, ApiError | NetworkError | DecodeError> =>
+    request(
+      `/api/v1/plans/${planId}`,
+      {
+        method: 'PATCH',
+        body: JSON.stringify({
+          title,
+          budget_target: String(budgetTarget),
+          shopping_date: shoppingDate
+        })
+      },
+      ShoppingPlanSchema
+    ),
+
   addItem: (
     planId: string,
     itemName: string,
     qty: number,
     unit: string,
     estimatedPrice: number,
-    category = 'General'
+    category = 'General',
+    isUnplanned = false
   ): Effect.Effect<PlanItem, ApiError | NetworkError | DecodeError> =>
     request(
       `/api/v1/plans/${planId}/items`,
@@ -55,7 +75,8 @@ export const PlanService = {
           qty,
           unit,
           estimated_price: estimatedPrice,
-          category
+          category,
+          is_unplanned: isUnplanned
         })
       },
       PlanItemSchema

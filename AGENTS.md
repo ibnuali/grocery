@@ -23,7 +23,7 @@ main.tsx → app.tsx (ErrorBoundary → ToastProvider → AuthProvider) → app-
                                                      fetch() → /api/v1/* → Go backend (:8080)
 ```
 
-- **Manual routing** via `useState<ActiveView>` in `app-content.tsx` — no react-router.
+- **Routing** uses `react-router-dom` with `BrowserRouter` in `app.tsx` and declarative route elements in `app-content.tsx`.
 - **Service layer**: every API call goes through `api-client.request()` which attaches JWT, decodes the response envelope with `@effect/schema`, and handles 401/network/decode errors as typed Effect failures.
 - **Offline**: `queue-service` stores check/uncheck mutations in IndexedDB; replays on reconnect via `online` event.
 - **Auth**: token + user + household stored in localStorage; schema-validated on load; 401 triggers auto-logout via registered callback.
@@ -88,8 +88,8 @@ await Effect.runPromise(prog)
 
 ### State Management
 - React Context for auth (`use-auth`) and toasts (`use-toast`)
-- Local `useState` for view-level state — no global store
-- `app-content.tsx` holds the active view, selected plan ID, and active plan object
+- Local `useState` stores loaded plan data inside `PlanRoute`; React Router owns URL and navigation state.
+- `app-content.tsx` owns the auth gate; `AuthenticatedShell` owns the route declarations and `PlanRoute` owns plan state coordination.
 
 ### Component Patterns
 - `forwardRef` for UI primitives (button, input)
@@ -111,7 +111,9 @@ await Effect.runPromise(prog)
 |---|---|
 | `src/main.tsx` | Entry point — mounts App in StrictMode |
 | `src/app.tsx` | Composition root: ErrorBoundary → ToastProvider → AuthProvider → AppContent |
-| `src/app-content.tsx` | Authenticated shell + manual router + plan state coordination |
+| `src/app-content.tsx` | Auth gate and top-level auth redirects |
+| `src/components/authenticated-shell.tsx` | Authenticated layout, header, and route declarations |
+| `src/routes/plan-route.tsx` | Plan loading, mutations, guards, and route-specific views |
 | `src/services/api-client.ts` | Centralized HTTP boundary with Effect, schema decode, 401 handling |
 | `src/domain/*.schema.ts` | Runtime-validated types for all API payloads |
 | `src/i18n/index.ts` | i18next initialization + react-i18next plugin |
@@ -133,10 +135,9 @@ await Effect.runPromise(prog)
 
 ## Testing & QA
 
-**No test infrastructure exists.** No test files, test frameworks, CI/CD pipelines, or pre-commit hooks.
-
 Current quality gates:
+- `bun test` — behavioral tests
 - `bun run build` — TypeScript type-check + Vite production build
 - `bun run lint` — oxlint static analysis
 
-To add testing, the natural fit would be Vitest (same Vite config) + React Testing Library + Playwright for E2E.
+Bun's built-in test runner covers deterministic domain and routing behavior; add broader UI coverage only when a DOM test harness is introduced.

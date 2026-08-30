@@ -138,7 +138,7 @@ export const PlanListView: React.FC<PlanListViewProps> = ({ onSelectPlan }) => {
         <PlanListSkeleton />
       ) : plans.length === 0 ? (
         <div style={{ borderRadius: 'var(--radius-card)', border: '2px dashed var(--color-rule)', background: 'var(--color-paper)', padding: '2.5rem', textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.75rem' }}>
-          <div style={{ display: 'flex', height: '3rem', width: '3rem', alignItems: 'center', justifyContent: 'center', borderRadius: '14px', background: 'oklch(86% 0.18 95 / 0.2)', color: 'var(--color-accent-deep)' }}>
+          <div style={{ display: 'flex', height: '3rem', width: '3rem', alignItems: 'center', justifyContent: 'center', borderRadius: '14px', background: 'color-mix(in oklch, var(--color-accent) 20%, transparent)', color: 'var(--color-accent-deep)' }}>
             <ShoppingBag style={{ height: '1.5rem', width: '1.5rem' }} />
           </div>
           <div>
@@ -159,7 +159,7 @@ export const PlanListView: React.FC<PlanListViewProps> = ({ onSelectPlan }) => {
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                     <span style={{ fontSize: 'var(--text-base)', fontWeight: 700, color: 'var(--color-ink)', fontFamily: 'var(--font-display)' }}>{p.title}</span>
-                    <span style={{ borderRadius: 'var(--radius-pill)', padding: '0.125rem 0.5rem', fontSize: '0.625rem', fontWeight: 700, fontFamily: 'var(--font-body)', background: isCompleted ? 'oklch(80% 0.16 150 / 0.2)' : 'oklch(86% 0.18 95 / 0.3)', color: isCompleted ? 'var(--color-mint)' : 'var(--color-accent-deep)' }}>{isCompleted ? t('planList.statusCompleted') : t('planList.statusPlanning')}</span>
+                    <span style={{ borderRadius: 'var(--radius-pill)', padding: '0.125rem 0.5rem', fontSize: '0.625rem', fontWeight: 700, fontFamily: 'var(--font-body)', background: isCompleted ? 'color-mix(in oklch, var(--color-mint) 20%, transparent)' : 'color-mix(in oklch, var(--color-accent) 30%, transparent)', color: isCompleted ? 'var(--color-mint)' : 'var(--color-accent-deep)' }}>{isCompleted ? t('planList.statusCompleted') : t('planList.statusPlanning')}</span>
                   </div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', fontSize: 'var(--text-xs)', color: 'var(--color-ink-3)', fontFamily: 'var(--font-body)' }}>
                     <span style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}><Calendar style={{ height: '0.875rem', width: '0.875rem' }} />{p.shopping_date ? p.shopping_date.substring(0, 10) : '-'}</span>

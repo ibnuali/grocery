@@ -16,14 +16,14 @@ All views share a single app-shell pattern: minimal top bar + content area.
 
 ## Theme — Hum (playful, multi-accent)
 
-- `--color-paper`     oklch(97% 0.012 95)   — warm cream, pear-yellow pull
+- `--color-paper`     oklch(97% 0.012 95)   — warm cream, neutral base
 - `--color-paper-2`   oklch(94% 0.016 95)   — tinted band
 - `--color-paper-3`   oklch(91% 0.020 95)   — deeper hover
 - `--color-ink`       oklch(20% 0.012 250)  — near-black, cool tilt
 - `--color-ink-2`     oklch(40% 0.010 250)  — secondary text
 - `--color-ink-3`     oklch(56% 0.008 250)  — muted text
 - `--color-rule`      oklch(88% 0.014 95)   — borders, dividers
-- `--color-accent`    oklch(86% 0.18 95)    — pear-yellow (primary CTA)
+- `--color-accent`    oklch(86% 0.10 350)   — soft pink (primary CTA)
 - `--color-accent-2`  oklch(66% 0.18 235)   — sky-cyan (links, hover)
 - `--color-accent-3`  oklch(68% 0.24 18)    — coral-red (pop moment)
 - `--color-mint`      oklch(80% 0.16 150)   — success states
@@ -55,7 +55,7 @@ tokens (`var(--space-md)`), never raw values.
 - Star-burst on primary action complete (coral-red, 420ms)
 
 ## CTA voice
-- Primary CTA: filled push button, pear-yellow background, rounded pill shape
+- Primary CTA: filled push button, soft-pink background, rounded pill shape
 - Secondary CTA: soft flat button, paper-2 background
 - Tertiary CTA: outline button, hairline border
 
@@ -69,7 +69,7 @@ tokens (`var(--space-md)`), never raw values.
 ## What pages MAY differ on
 - Section layout (list vs grid vs form)
 - Card density (compact checklist vs spacious plan cards)
-- Accent distribution (login = pear-yellow hero; in-store = dark mode progress card)
+- Accent distribution (login = soft-pink hero; in-store = dark mode progress card)
 
 ## Exports
 

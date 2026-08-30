@@ -23,7 +23,7 @@ export const BudgetBar: React.FC<BudgetBarProps> = ({
   const isOver = totalEstimated > budgetTarget
   const isClose = percentage >= 85 && !isOver
 
-  const variant = isOver ? 'coral' : isClose ? 'accent' : 'mint'
+  const variant = isOver ? 'coral' : 'accent'
 
   return (
     <div

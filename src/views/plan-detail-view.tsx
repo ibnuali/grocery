@@ -4,7 +4,7 @@ import { Input } from '../components/ui/input'
 import { Button } from '../components/ui/button'
 import { BudgetBar } from '../components/ui/budget-bar'
 import { ItemAutocomplete } from '../components/ui/item-autocomplete'
-import { Plus, Trash2, Calendar, ShoppingBag, ArrowRight } from 'lucide-react'
+import { Plus, Pencil, Trash2, Calendar, ShoppingBag, ArrowRight } from 'lucide-react'
 import type { MasterItem } from '../domain/catalog.schema'
 import type { PlanItem } from '../domain/plan.schema'
 import { useTranslation } from 'react-i18next'
@@ -44,21 +44,46 @@ export const PlanDetailSkeleton: React.FC = () => (
   </div>
 )
 
+export interface PlanDetailsUpdate {
+  title: string
+  budgetTarget: number
+  shoppingDate: string
+}
+
 export interface PlanDetailViewProps {
   planTitle: string; shoppingDate: string; budgetTarget: number; items: readonly PlanItem[]
+  canReconcile: boolean
+  onUpdatePlan: (details: PlanDetailsUpdate) => Promise<boolean>
   onAddItem: (item: { itemName: string; qty: number; unit: string; estimatedPrice: number; category: string }) => Promise<void>
   onDeleteItem: (itemId: string) => Promise<void>; onStartShopping: () => void; onReconcile: () => void; onBack: () => void
 }
 
-export const PlanDetailView: React.FC<PlanDetailViewProps> = ({ planTitle, shoppingDate, budgetTarget, items, onAddItem, onDeleteItem, onStartShopping, onReconcile, onBack }) => {
+export const PlanDetailView: React.FC<PlanDetailViewProps> = ({
+  planTitle,
+  shoppingDate,
+  budgetTarget,
+  items,
+  canReconcile,
+  onUpdatePlan,
+  onAddItem,
+  onDeleteItem,
+  onStartShopping,
+  onReconcile,
+  onBack
+}) => {
   const { t } = useTranslation()
   const [isAddOpen, setIsAddOpen] = useState(false)
+  const [isEditOpen, setIsEditOpen] = useState(false)
+  const [editTitle, setEditTitle] = useState(planTitle)
+  const [editBudgetTarget, setEditBudgetTarget] = useState(String(budgetTarget))
+  const [editShoppingDate, setEditShoppingDate] = useState(shoppingDate)
   const [itemName, setItemName] = useState('')
   const [category, setCategory] = useState('General')
   const [qty, setQty] = useState('1')
   const [unit, setUnit] = useState('pcs')
   const [estimatedPrice, setEstimatedPrice] = useState('0')
   const [submitting, setSubmitting] = useState(false)
+  const [updatingPlan, setUpdatingPlan] = useState(false)
 
   const handleAutocompleteChange = (name: string, master?: MasterItem) => {
     setItemName(name)
@@ -69,6 +94,29 @@ export const PlanDetailView: React.FC<PlanDetailViewProps> = ({ planTitle, shopp
     e.preventDefault(); if (!itemName.trim()) return; setSubmitting(true)
     await onAddItem({ itemName: itemName.trim(), category: category.trim() || 'General', qty: Number(qty) || 1, unit: unit.trim() || 'pcs', estimatedPrice: Number(estimatedPrice) || 0 })
     setSubmitting(false); setIsAddOpen(false); setItemName(''); setQty('1'); setUnit('pcs'); setEstimatedPrice('0')
+  }
+
+  const handleEditOpen = () => {
+    setEditTitle(planTitle)
+    setEditBudgetTarget(String(budgetTarget))
+    setEditShoppingDate(shoppingDate)
+    setIsEditOpen(true)
+  }
+
+  const handleEditSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!editTitle.trim() || !editShoppingDate) return
+    setUpdatingPlan(true)
+    try {
+      const saved = await onUpdatePlan({
+        title: editTitle.trim(),
+        budgetTarget: Number(editBudgetTarget) || 0,
+        shoppingDate: editShoppingDate
+      })
+      if (saved) setIsEditOpen(false)
+    } finally {
+      setUpdatingPlan(false)
+    }
   }
 
   const totalEstimated = items.reduce((acc, item) => acc + Number(item.qty) * Number(item.estimated_price), 0)
@@ -98,12 +146,13 @@ export const PlanDetailView: React.FC<PlanDetailViewProps> = ({ planTitle, shopp
             <p style={{ fontSize: 'var(--text-xs)', color: 'var(--color-ink-3)', marginTop: '0.25rem', fontFamily: 'var(--font-body)' }}>{t('planDetail.budgetTarget')} <span style={{ fontWeight: 600, color: 'var(--color-ink)', fontFamily: 'var(--font-mono)', fontVariantNumeric: 'tabular-nums' }}>{formatCurrency(budgetTarget)}</span></p>
           </div>
           <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
-            <Button variant="outline" size="sm" onClick={onReconcile}>{t('planDetail.reconcile')}</Button>
+            <Button variant="outline" size="sm" onClick={handleEditOpen}><Pencil style={{ height: '0.875rem', width: '0.875rem' }} /><span>{t('planDetail.editPlan')}</span></Button>
+            <Button variant="outline" size="sm" onClick={onReconcile} disabled={!canReconcile} title={!canReconcile ? t('planDetail.reconcileUnavailable') : undefined}>{t('planDetail.reconcile')}</Button>
             <Button size="sm" onClick={onStartShopping}><span>{t('planDetail.startShopping')}</span><ArrowRight style={{ height: '0.875rem', width: '0.875rem' }} /></Button>
           </div>
         </div>
         <BudgetBar totalEstimated={totalEstimated} budgetTarget={budgetTarget} />
-        <div style={{ borderRadius: '14px', background: 'oklch(86% 0.18 95 / 0.12)', padding: '1rem', border: '1.5px solid oklch(86% 0.18 95 / 0.25)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        <div style={{ borderRadius: '14px', background: 'color-mix(in oklch, var(--color-accent) 12%, transparent)', padding: '1rem', border: '1.5px solid color-mix(in oklch, var(--color-accent) 25%, transparent)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <div>
             <div style={{ fontSize: 'var(--text-xs)', color: 'var(--color-accent-deep)', fontWeight: 500, fontFamily: 'var(--font-body)' }}>{t('planDetail.totalEstimate')}</div>
             <div style={{ fontSize: 'var(--text-xl)', fontWeight: 800, color: 'var(--color-accent-deep)', fontFamily: 'var(--font-mono)', fontVariantNumeric: 'tabular-nums' }}>{formatCurrency(totalEstimated)}</div>
@@ -173,6 +222,18 @@ export const PlanDetailView: React.FC<PlanDetailViewProps> = ({ planTitle, shopp
           <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.5rem', paddingTop: '0.5rem' }}>
             <Button type="button" variant="outline" size="sm" onClick={() => setIsAddOpen(false)}>{t('common.cancel')}</Button>
             <Button type="submit" size="sm" disabled={submitting}>{submitting ? t('common.saving') : t('planDetail.addButton')}</Button>
+          </div>
+        </form>
+      </Modal>
+
+      <Modal open={isEditOpen} onOpenChange={setIsEditOpen} title={t('planDetail.editModalTitle')} description={t('planDetail.editModalDesc')}>
+        <form onSubmit={handleEditSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+          <Input label={t('planList.nameLabel')} placeholder={t('planList.namePlaceholder')} value={editTitle} onChange={(e) => setEditTitle(e.target.value)} required />
+          <Input label={t('planList.budgetLabel')} type="number" min="0" step="10000" value={editBudgetTarget} onChange={(e) => setEditBudgetTarget(e.target.value)} required />
+          <Input label={t('planList.dateLabel')} type="date" value={editShoppingDate} onChange={(e) => setEditShoppingDate(e.target.value)} required />
+          <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.5rem', paddingTop: '0.5rem' }}>
+            <Button type="button" variant="outline" size="sm" onClick={() => setIsEditOpen(false)}>{t('common.cancel')}</Button>
+            <Button type="submit" size="sm" disabled={updatingPlan}>{updatingPlan ? t('common.saving') : t('planDetail.savePlan')}</Button>
           </div>
         </form>
       </Modal>

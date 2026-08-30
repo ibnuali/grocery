@@ -1,75 +1,95 @@
-import React, { useState } from 'react'
-import { useAuth } from '../hooks/use-auth'
-import { Input } from '../components/ui/input'
-import { Button } from '../components/ui/button'
-import { ShoppingCart, AlertCircle } from 'lucide-react'
+import React, { useEffect, useState } from 'react'
+import { ArrowRight, ShoppingCart } from 'lucide-react'
+import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { LanguageToggle } from '../components/language-toggle'
 
 export const LoginView: React.FC = () => {
-  const { login, register } = useAuth()
   const { t } = useTranslation()
-  const [isRegister, setIsRegister] = useState(false)
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [name, setName] = useState('')
-  const [error, setError] = useState<string | null>(null)
-  const [loading, setLoading] = useState(false)
+  const [scrolled, setScrolled] = useState(false)
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setError(null)
-    setLoading(true)
-    if (isRegister) {
-      const res = await register(email, password, name)
-      if (!res.success) setError(res.error || t('login.errorRegister'))
-    } else {
-      const res = await login(email, password)
-      if (!res.success) setError(res.error || t('login.errorLogin'))
-    }
-    setLoading(false)
-  }
+  useEffect(() => {
+    const handleScroll = () => { setScrolled(window.scrollY > 24) }
+    window.addEventListener('scroll', handleScroll, { passive: true })
+    return () => window.removeEventListener('scroll', handleScroll)
+  }, [])
 
   return (
-    <div style={{ display: 'flex', minHeight: '100vh', alignItems: 'center', justifyContent: 'center', padding: '1rem', background: 'var(--color-paper)' }}>
-      <div style={{ position: 'fixed', top: '-20%', right: '-10%', width: '40vw', height: '40vw', borderRadius: '50%', background: 'oklch(86% 0.18 95 / 0.15)', filter: 'blur(80px)', pointerEvents: 'none' }} />
-      <div style={{ width: '100%', maxWidth: '26rem', borderRadius: 'var(--radius-card)', background: 'var(--color-paper)', padding: 'clamp(1.5rem, 5vw, 2.5rem)', boxShadow: '0 24px 64px -16px oklch(20% 0.012 250 / 0.12)', border: '1.5px solid var(--color-rule)', position: 'relative' }}>
-        <div style={{ position: 'absolute', top: '0.75rem', right: '0.75rem' }}>
-          <LanguageToggle />
+    <>
+      {/* N5 · Floating pill */}
+      <nav className={`nav-pill${scrolled ? ' nav-pill--scrolled' : ''}`} aria-label={t('navigation.label')}>
+        <a className="nav-pill__wordmark" href="#top" aria-label="Grocery Planner home">
+          <span className="nav-pill__mark"><ShoppingCart size={14} strokeWidth={2.5} /></span>
+          <span className="nav-pill__name">Grocery Planner</span>
+        </a>
+        <div className="nav-pill__links">
+          <a href="#how-it-works">{t('login.navHowItWorks')}</a>
+          <Link to="/login">{t('login.navSignIn')}</Link>
         </div>
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center' }}>
-          <div style={{ display: 'flex', height: '3.5rem', width: '3.5rem', alignItems: 'center', justifyContent: 'center', borderRadius: '16px', background: 'var(--color-accent)', color: 'var(--color-ink)', boxShadow: '0 4px 0 0 var(--color-accent-deep), 0 8px 20px -6px oklch(86% 0.18 95 / 0.5)', marginBottom: '1rem' }}>
-            <ShoppingCart style={{ height: '1.75rem', width: '1.75rem' }} />
+        <LanguageToggle />
+      </nav>
+
+      <main className="landing-page">
+        {/* H1 · Marquee hero */}
+        <section className="marquee-hero" id="top">
+          <h1 className="marquee-hero__display">{t('login.heroTitle')}</h1>
+          <p className="marquee-hero__description">{t('login.heroDescription')}</p>
+          <Link className="marquee-hero__cta" to="/login">
+            {t('login.heroSecondary')} <ArrowRight size={15} />
+          </Link>
+        </section>
+
+        {/* Mid-page marquee divider */}
+        <div className="marquee-divider" aria-hidden="true">
+          <div className="marquee-divider__track">
+            <span>{t('login.marqueeTicker')}</span>
+            <span>{t('login.marqueeTicker')}</span>
           </div>
-          <h1 style={{ fontSize: 'var(--text-xl)', fontWeight: 700, letterSpacing: '-0.025em', color: 'var(--color-ink)', fontFamily: 'var(--font-display)', lineHeight: 1.2 }}>
-            {isRegister ? t('login.createAccount') : t('login.title')}
-          </h1>
-          <p style={{ marginTop: '0.375rem', fontSize: 'var(--text-xs)', color: 'var(--color-ink-3)', maxWidth: '20rem', fontFamily: 'var(--font-body)', lineHeight: 1.5 }}>
-            {isRegister ? t('login.subtitleRegister') : t('login.subtitleLogin')}
-          </p>
         </div>
-        {error && (
-          <div style={{ marginTop: '1.25rem', display: 'flex', alignItems: 'center', gap: '0.625rem', borderRadius: 'var(--radius-input)', background: 'oklch(68% 0.24 18 / 0.08)', padding: '0.75rem 0.875rem', fontSize: 'var(--text-xs)', color: 'var(--color-accent-3)', border: '1.5px solid oklch(68% 0.24 18 / 0.2)', fontFamily: 'var(--font-body)' }}>
-            <AlertCircle style={{ height: '1rem', width: '1rem', flexShrink: 0 }} />
-            <span style={{ fontWeight: 500 }}>{error}</span>
+
+        {/* F4 · Step sequence */}
+        <section className="landing-workflow" id="how-it-works">
+          <div className="landing-workflow__head">
+            <h2>{t('login.workflowTitle')}</h2>
+            <p>{t('login.workflowDescription')}</p>
           </div>
-        )}
-        <form onSubmit={handleSubmit} style={{ marginTop: '1.5rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-          {isRegister && (
-              <Input label={t('login.fullName')} placeholder={t('login.fullNamePlaceholder')} value={name} onChange={(e) => setName(e.target.value)} required />
-          )}
-          <Input label={t('login.email')} placeholder={t('login.emailPlaceholder')} type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
-          <Input label={t('login.password')} type="password" placeholder={t('login.passwordPlaceholder')} value={password} onChange={(e) => setPassword(e.target.value)} required minLength={8} />
-          <Button type="submit" size="lg" disabled={loading} style={{ width: '100%', marginTop: '0.5rem' }}>
-            {loading ? t('common.submitting') : isRegister ? t('login.registerButton') : t('login.loginButton')}
-          </Button>
-        </form>
-        <div style={{ marginTop: '1.5rem', paddingTop: '1.25rem', borderTop: '1.5px solid var(--color-rule)', textAlign: 'center' }}>
-          <button type="button" onClick={() => { setIsRegister(!isRegister); setError(null) }} style={{ fontSize: 'var(--text-xs)', color: 'var(--color-accent-2)', fontWeight: 600, background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'var(--font-body)' }}>
-            {isRegister ? t('login.switchToLogin') : t('login.switchToRegister')}
-          </button>
-        </div>
-      </div>
-    </div>
+          <ol className="step-sequence">
+            <li className="step-sequence__item">
+              <span className="step-sequence__number">1</span>
+              <div className="step-sequence__body">
+                <h3>{t('login.stepPlan')}</h3>
+                <p>{t('login.stepPlanDescription')}</p>
+              </div>
+            </li>
+            <li className="step-sequence__item">
+              <span className="step-sequence__number">2</span>
+              <div className="step-sequence__body">
+                <h3>{t('login.stepShop')}</h3>
+                <p>{t('login.stepShopDescription')}</p>
+              </div>
+            </li>
+            <li className="step-sequence__item">
+              <span className="step-sequence__number">3</span>
+              <div className="step-sequence__body">
+                <h3>{t('login.stepReconcile')}</h3>
+                <p>{t('login.stepReconcileDescription')}</p>
+              </div>
+            </li>
+          </ol>
+        </section>
+
+        {/* Ft8 · Marquee footer */}
+        <footer className="foot-marquee" aria-label="Footer">
+          <div className="foot-marquee__track" aria-hidden="true">
+            <span>{t('login.footerTicker')}</span>
+            <span>{t('login.footerTicker')}</span>
+          </div>
+          <div className="foot-marquee__meta">
+            <span className="foot-marquee__wordmark">Grocery Planner</span>
+            <span>{t('login.footerMeta')}</span>
+          </div>
+        </footer>
+      </main>
+    </>
   )
 }

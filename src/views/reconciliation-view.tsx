@@ -84,7 +84,7 @@ export const ReconciliationView: React.FC<ReconciliationViewProps> = ({ plan, on
             <div style={{ fontSize: '0.6875rem', color: 'var(--color-ink-3)', fontWeight: 500, fontFamily: 'var(--font-body)' }}>{t('reconciliation.initialEstimate')}</div>
             <div style={{ fontSize: 'var(--text-base)', fontWeight: 700, color: 'var(--color-ink)', ...mono }}>{formatCurrency(totalEstimated)}</div>
           </div>
-          <div style={{ borderRadius: '14px', background: 'oklch(86% 0.18 95 / 0.12)', padding: '1rem', border: '1.5px solid oklch(86% 0.18 95 / 0.25)' }}>
+          <div style={{ borderRadius: '14px', background: 'color-mix(in oklch, var(--color-accent) 12%, transparent)', padding: '1rem', border: '1.5px solid color-mix(in oklch, var(--color-accent) 25%, transparent)' }}>
             <div style={{ fontSize: '0.6875rem', color: 'var(--color-accent-deep)', fontWeight: 500, fontFamily: 'var(--font-body)' }}>{t('reconciliation.actualTotal')}</div>
             <div style={{ fontSize: 'var(--text-lg)', fontWeight: 800, color: 'var(--color-accent-deep)', ...mono }}>{formatCurrency(grandTotalActual)}</div>
           </div>
@@ -149,11 +149,11 @@ export const ReconciliationView: React.FC<ReconciliationViewProps> = ({ plan, on
         {unplannedItems.length > 0 && (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
             {unplannedItems.map((u) => (
-              <div key={u._key} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderRadius: '14px', background: 'oklch(86% 0.18 95 / 0.1)', padding: '1rem', border: '1.5px solid oklch(86% 0.18 95 / 0.25)' }}>
+              <div key={u._key} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderRadius: '14px', background: 'color-mix(in oklch, var(--color-accent) 10%, transparent)', padding: '1rem', border: '1.5px solid color-mix(in oklch, var(--color-accent) 25%, transparent)' }}>
                 <div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                     <span style={{ fontSize: 'var(--text-sm)', fontWeight: 700, color: 'var(--color-accent-deep)', fontFamily: 'var(--font-body)' }}>{u.item_name}</span>
-                    <span style={{ borderRadius: '6px', background: 'oklch(86% 0.18 95 / 0.3)', padding: '0.125rem 0.375rem', fontSize: '0.625rem', fontWeight: 700, color: 'var(--color-accent-deep)', fontFamily: 'var(--font-body)' }}>{t('common.unplanned')}</span>
+                    <span style={{ borderRadius: '6px', background: 'color-mix(in oklch, var(--color-accent) 30%, transparent)', padding: '0.125rem 0.375rem', fontSize: '0.625rem', fontWeight: 700, color: 'var(--color-accent-deep)', fontFamily: 'var(--font-body)' }}>{t('common.unplanned')}</span>
                   </div>
                   <div style={{ fontSize: 'var(--text-xs)', color: 'var(--color-ink-3)', marginTop: '0.125rem', fontFamily: 'var(--font-mono)', fontVariantNumeric: 'tabular-nums' }}>{u.qty} {u.unit} × {formatCurrency(Number(u.actual_price))}</div>
                 </div>

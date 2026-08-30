@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react'
-import { ChevronDown, LogOut, Mail, Settings, UserRound } from 'lucide-react'
+import { ChevronDown, LogOut, Mail, Settings } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import type { User } from '../domain/auth.schema'
 import { LanguageToggle } from './language-toggle'
@@ -116,7 +116,7 @@ export const UserMenu: React.FC<UserMenuProps> = ({ user, onLogout }) => {
             border: '1.5px solid var(--color-rule)',
             borderRadius: 'var(--radius-card)',
             background: 'var(--color-paper)',
-            boxShadow: '0 16px 40px -18px var(--color-ink-glass)',
+            boxShadow: 'var(--shadow-dropdown)',
           }}
         >
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', padding: '0.75rem' }}>
@@ -124,10 +124,6 @@ export const UserMenu: React.FC<UserMenuProps> = ({ user, onLogout }) => {
               {getInitials(user.name)}
             </span>
             <div style={{ minWidth: 0 }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', marginBottom: '0.2rem', fontSize: 'var(--text-xs)', fontWeight: 800 }}>
-                <UserRound aria-hidden="true" style={{ width: '0.85rem', height: '0.85rem', color: 'var(--color-accent-2)' }} />
-                {t('common.profile')}
-              </div>
               <div style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', fontSize: 'var(--text-sm)', fontWeight: 700 }}>{user.name}</div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.3rem', overflow: 'hidden', color: 'var(--color-ink-3)', fontSize: 'var(--text-xs)' }}>
                 <Mail aria-hidden="true" style={{ width: '0.75rem', height: '0.75rem', flexShrink: 0 }} />

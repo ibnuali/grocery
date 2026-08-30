@@ -1,5 +1,27 @@
 [
   {
+    "date": "2026-08-25",
+    "macrostructure": "Marquee Hero",
+    "theme": "Hum",
+    "enrichment": "none (typography only)",
+    "brief": "Grocery Planner landing page redesign · marquee hero + F4 steps + Ft8 footer",
+    "scope": "landing",
+    "nav": "N5 floating pill",
+    "footer": "Ft8 marquee scroll",
+    "theme_axes": "light / rounded-sans / multi-accent"
+  },
+  {
+    "date": "2026-08-25",
+    "macrostructure": "Narrative Workflow",
+    "theme": "Hum",
+    "enrichment": "none (CSS product preview)",
+    "brief": "Grocery Planner landing page · household grocery workflow · playful genre",
+    "scope": "landing",
+    "nav": "N12 announcement + retracting nav",
+    "footer": "Ft5 statement",
+    "theme_axes": "light / rounded-sans / multi-accent"
+  },
+  {
     "date": "2026-08-24",
     "macrostructure": "App Shell (functional)",
     "theme": "Hum",

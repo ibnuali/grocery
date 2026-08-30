@@ -88,7 +88,7 @@ const prog = CatalogService.searchItems(query.trim()).pipe(
           type="text"
           value={query}
           onChange={handleInputChange}
-          onFocus={(e) => { setIsOpen(true); e.currentTarget.style.borderColor = 'var(--color-accent-deep)'; e.currentTarget.style.boxShadow = '0 0 0 3px oklch(76% 0.20 95 / 0.25)' }}
+          onFocus={(e) => { setIsOpen(true); e.currentTarget.style.borderColor = 'var(--color-accent-deep)'; e.currentTarget.style.boxShadow = '0 0 0 3px color-mix(in oklch, var(--color-accent-deep) 25%, transparent)' }}
           onBlur={(e) => { e.currentTarget.style.borderColor = 'var(--color-rule)'; e.currentTarget.style.boxShadow = 'none' }}
           placeholder={resolvedPlaceholder}
           style={{

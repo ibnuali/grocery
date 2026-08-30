@@ -1,5 +1,5 @@
 /* Hallmark · design-system: Hum · genre: playful · designed-as-app
- * Palette: multi-accent (pear-yellow primary, sky-cyan secondary, coral-red pop)
+ * Palette: multi-accent (soft-pink primary, sky-cyan secondary, coral-red pop)
  * Typography: Plus Jakarta Sans 600/400 + JetBrains Mono 400
  * Source: design.md (locked system)
  */
@@ -19,8 +19,8 @@
   --color-rule:      oklch(88% 0.014 95);
 
   /* ── Accents ── */
-  --color-accent:    oklch(86% 0.18 95);
-  --color-accent-deep: oklch(76% 0.20 95);
+  --color-accent:    oklch(86% 0.10 350);
+  --color-accent-deep: oklch(68% 0.16 350);
   --color-accent-2:  oklch(66% 0.18 235);
   --color-accent-3:  oklch(68% 0.24 18);
   --color-mint:      oklch(80% 0.16 150);
@@ -30,6 +30,7 @@
   /* ── Glass (translucent for backdrops) ── */
   --color-paper-glass: oklch(97% 0.012 95 / 0.85);
   --color-ink-glass:   oklch(20% 0.012 250 / 0.85);
+  --shadow-dropdown:   0 16px 40px -18px var(--color-ink-glass);
 
   /* ── Typography ── */
   --font-display:    'Plus Jakarta Sans', system-ui, sans-serif;
@@ -94,8 +95,8 @@
   --color-ink-2:     oklch(72% 0.008 95);
   --color-ink-3:     oklch(56% 0.006 250);
   --color-rule:      oklch(28% 0.012 95);
-  --color-accent:    oklch(82% 0.16 95);
-  --color-accent-deep: oklch(72% 0.18 95);
+  --color-accent:    oklch(80% 0.13 350);
+  --color-accent-deep: oklch(70% 0.16 350);
   --color-accent-2:  oklch(70% 0.16 235);
   --color-accent-3:  oklch(72% 0.20 18);
   --color-mint:      oklch(76% 0.14 150);
@@ -103,4 +104,5 @@
   --color-focus:     var(--color-accent-deep);
   --color-paper-glass: oklch(16% 0.010 95 / 0.85);
   --color-ink-glass:   oklch(94% 0.006 95 / 0.85);
+  --shadow-dropdown:   0 20px 48px -16px oklch(0% 0 0 / 0.72), 0 6px 16px -8px oklch(0% 0 0 / 0.45);
 }

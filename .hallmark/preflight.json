@@ -1,0 +1,24 @@
+{
+  "lastScan": "2026-08-25",
+  "fontStack": {
+    "display": "Plus Jakarta Sans (Google Fonts, weights 400-700)",
+    "body": "Plus Jakarta Sans (Google Fonts, weights 400-700)",
+    "mono": "JetBrains Mono (Google Fonts, weights 400-500)",
+    "source": "index.html <link> tags"
+  },
+  "palette": {
+    "type": "OKLCH custom properties",
+    "source": "src/tokens.css :root block",
+    "theme": "Hum (multi-accent: pear-yellow, sky-cyan, coral-red)"
+  },
+  "motion": {
+    "library": "none (CSS-only transitions/animations)",
+    "stance": "motion-cut (no framer-motion/gsap/motion detected)"
+  },
+  "spacing": {
+    "type": "4pt scale with semantic names (--space-3xs through --space-4xl)",
+    "source": "src/tokens.css"
+  },
+  "framework": "React 19 + Vite 8 + Tailwind CSS v4",
+  "designSystem": "design.md at project root (locked system: Hum, playful genre)"
+}
