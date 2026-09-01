@@ -94,6 +94,7 @@
   },
   "settings": {
     "eyebrow": "Account settings",
+    "back": "Back",
     "title": "Settings",
     "subtitle": "Update your profile information and keep your account secure.",
     "editProfileTitle": "Edit Profile",
@@ -153,15 +154,18 @@
     "dateLabel": "Shopping Date",
     "createButton": "Create Plan",
     "errorLoad": "Failed to load plans",
-    "errorCreate": "Failed to create shopping plan"
+    "errorCreate": "Failed to create shopping plan",
+    "edit": "Edit",
+    "menuLabel": "Plan options",
+    "editTitle": "Edit Shopping Plan",
+    "editDesc": "Update the plan name, budget, or date",
+    "deleteTitle": "Delete Shopping Plan?",
+    "deleteDesc": "The plan \"{{title}}\" and all its items will be deleted. This cannot be undone.",
+    "errorUpdate": "Failed to update shopping plan",
+    "errorDelete": "Failed to delete shopping plan"
   },
   "planDetail": {
-    "backToList": "← Back to List",
     "budgetTarget": "Budget Target:",
-    "editPlan": "Edit Plan",
-    "editModalTitle": "Edit Shopping Plan",
-    "editModalDesc": "Update the plan name, budget target, or shopping date",
-    "savePlan": "Save Changes",
     "reconcile": "Reconcile Receipt",
     "reconcileUnavailable": "Finish shopping before reconciling the receipt",
     "startShopping": "Start Shopping",
@@ -181,8 +185,7 @@
     "addButton": "Add to List",
     "errorLoad": "Failed to load plan details",
     "errorAdd": "Failed to add item",
-    "errorDelete": "Failed to delete item",
-    "errorUpdate": "Failed to update shopping plan"
+    "errorDelete": "Failed to delete item"
   },
   "inStore": {
     "modeLabel": "Shopping Mode",
@@ -199,6 +202,8 @@
     "addUnplannedButton": "Add to Shopping List",
     "errorAddUnplanned": "Failed to add unplanned item",
     "back": "Back",
+    "done": "Done",
+    "errorComplete": "Failed to complete shopping",
     "finishReconcile": "Done & Reconcile",
     "reconcileUnavailable": "Finish picking up all items before reconciling"
   },
@@ -232,7 +237,8 @@
     "safe": "Safe",
     "remaining": "Remaining",
     "estimate": "Estimate:",
-    "target": "Target:"
+    "target": "Target:",
+    "noTarget": "No budget set"
   },
   "itemAutocomplete": {
     "placeholder": "Type item name...",

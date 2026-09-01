@@ -94,6 +94,7 @@
   },
   "settings": {
     "eyebrow": "Pengaturan akun",
+    "back": "Kembali",
     "title": "Pengaturan",
     "subtitle": "Perbarui informasi profil dan jaga keamanan akunmu.",
     "editProfileTitle": "Edit Profil",
@@ -153,15 +154,18 @@
     "dateLabel": "Tanggal Rencana Belanja",
     "createButton": "Buat Rencana",
     "errorLoad": "Gagal memuat rencana",
-    "errorCreate": "Gagal membuat rencana belanja"
+    "errorCreate": "Gagal membuat rencana belanja",
+    "edit": "Edit",
+    "menuLabel": "Opsi rencana",
+    "editTitle": "Edit Rencana Belanja",
+    "editDesc": "Perbarui nama, anggaran, atau tanggal rencana",
+    "deleteTitle": "Hapus Rencana Belanja?",
+    "deleteDesc": "Rencana \"{{title}}\" dan seluruh isinya akan dihapus. Tindakan ini tidak dapat dibatalkan.",
+    "errorUpdate": "Gagal memperbarui rencana belanja",
+    "errorDelete": "Gagal menghapus rencana belanja"
   },
   "planDetail": {
-    "backToList": "← Kembali ke Daftar",
     "budgetTarget": "Target Anggaran:",
-    "editPlan": "Edit Rencana",
-    "editModalTitle": "Edit Rencana Belanja",
-    "editModalDesc": "Perbarui nama rencana, target anggaran, atau tanggal belanja",
-    "savePlan": "Simpan Perubahan",
     "reconcile": "Rekonsiliasi Struk",
     "reconcileUnavailable": "Selesaikan semua belanja sebelum merekonsiliasi struk",
     "startShopping": "Mulai Belanja",
@@ -181,8 +185,7 @@
     "addButton": "Tambahkan ke Daftar",
     "errorLoad": "Gagal memuat detail rencana",
     "errorAdd": "Gagal menambahkan item",
-    "errorDelete": "Gagal menghapus item",
-    "errorUpdate": "Gagal memperbarui rencana belanja"
+    "errorDelete": "Gagal menghapus item"
   },
   "inStore": {
     "modeLabel": "Mode Belanja",
@@ -200,6 +203,8 @@
     "addUnplannedButton": "Tambah ke Daftar Belanja",
     "errorAddUnplanned": "Gagal menambahkan barang dadakan",
     "back": "Kembali",
+    "done": "Selesai",
+    "errorComplete": "Gagal menyelesaikan belanja",
     "finishReconcile": "Selesai & Rekonsiliasi",
     "reconcileUnavailable": "Ambil semua barang terlebih dahulu sebelum merekonsiliasi"
   },
@@ -234,7 +239,8 @@
     "safe": "Aman",
     "remaining": "Sisa",
     "estimate": "Estimasi:",
-    "target": "Target:"
+    "target": "Target:",
+    "noTarget": "Belum ada target"
   },
   "itemAutocomplete": {
     "placeholder": "Ketik nama barang...",

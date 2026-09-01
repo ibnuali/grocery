@@ -1,205 +1,416 @@
-import React, { useState } from 'react'
-import { useTranslation } from 'react-i18next'
-import { Effect } from 'effect'
-import { Modal } from '../components/ui/modal'
-import { Input } from '../components/ui/input'
-import { Button } from '../components/ui/button'
-import { ItemAutocomplete } from '../components/ui/item-autocomplete'
-import { ReconciliationService, type PlannedItemReconcile, type UnplannedItemReconcile } from '../services/reconciliation-service'
-import type { PlanItem, ShoppingPlan } from '../domain/plan.schema'
-import type { MasterItem } from '../domain/catalog.schema'
-import { Receipt, Plus, ArrowLeft, TrendingUp, TrendingDown, MinusCircle, Check } from 'lucide-react'
-import { formatCurrency } from '../i18n/format'
+import React, { useState } from "react";
+import { useTranslation } from "react-i18next";
+import { Effect } from "effect";
+import { Modal } from "../components/ui/modal";
+import { Input } from "../components/ui/input";
+import { Button } from "../components/ui/button";
+import { ItemAutocomplete } from "../components/ui/item-autocomplete";
+import {
+  ReconciliationService,
+  type PlannedItemReconcile,
+  type UnplannedItemReconcile,
+} from "../services/reconciliation-service";
+import type { PlanItem, ShoppingPlan } from "../domain/plan.schema";
+import type { MasterItem } from "../domain/catalog.schema";
+import {
+  Plus,
+  ArrowLeft,
+  TrendingUp,
+  TrendingDown,
+  MinusCircle,
+  Check,
+  Trash2,
+} from "lucide-react";
+import { formatCurrency } from "../i18n/format";
 
-interface UnplannedItemWithKey extends UnplannedItemReconcile { _key: string }
-export interface ReconciliationViewProps { plan: ShoppingPlan; onSuccess: (updatedPlan: ShoppingPlan) => void; onBack: () => void }
-interface PlannedFormState { [id: string]: { actual_price: string; is_skipped: boolean } }
+interface UnplannedItemWithKey extends UnplannedItemReconcile {
+  _key: string;
+}
+export interface ReconciliationViewProps {
+  plan: ShoppingPlan;
+  onSuccess: (updatedPlan: ShoppingPlan) => void;
+  onBack: () => void;
+}
+interface PlannedFormState {
+  [id: string]: { actual_price: string; is_skipped: boolean };
+}
 
-export const ReconciliationView: React.FC<ReconciliationViewProps> = ({ plan, onSuccess, onBack }) => {
-  const { t } = useTranslation()
+export const ReconciliationView: React.FC<ReconciliationViewProps> = ({
+  plan,
+  onSuccess,
+  onBack,
+}) => {
+  const { t } = useTranslation();
   const [plannedState, setPlannedState] = useState<PlannedFormState>(() => {
-    const initial: PlannedFormState = {}
-    plan.items?.forEach((item: PlanItem) => { initial[item.id] = { actual_price: '', is_skipped: false } })
-    return initial
-  })
-  const [unplannedItems, setUnplannedItems] = useState<UnplannedItemWithKey[]>([])
-  const [isAddUnplannedOpen, setIsAddUnplannedOpen] = useState(false)
-  const [unplannedName, setUnplannedName] = useState('')
-  const [unplannedCategory, setUnplannedCategory] = useState('General')
-  const [unplannedQty, setUnplannedQty] = useState('1')
-  const [unplannedUnit, setUnplannedUnit] = useState('pcs')
-  const [unplannedPrice, setUnplannedPrice] = useState('0')
-  const [submitting, setSubmitting] = useState(false)
-  const [error, setError] = useState<string | null>(null)
+    const initial: PlannedFormState = {};
+    plan.items?.forEach((item: PlanItem) => {
+      initial[item.id] = { actual_price: "", is_skipped: false };
+    });
+    return initial;
+  });
+  const [unplannedItems, setUnplannedItems] = useState<UnplannedItemWithKey[]>(
+    [],
+  );
+  const [isAddUnplannedOpen, setIsAddUnplannedOpen] = useState(false);
+  const [unplannedName, setUnplannedName] = useState("");
+  const [unplannedCategory, setUnplannedCategory] = useState("General");
+  const [unplannedQty, setUnplannedQty] = useState("1");
+  const [unplannedUnit, setUnplannedUnit] = useState("pcs");
+  const [unplannedPrice, setUnplannedPrice] = useState("0");
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  const handlePriceChange = (id: string, price: string) => { setPlannedState((prev) => ({ ...prev, [id]: { ...prev[id], actual_price: price } })) }
-  const handleToggleSkip = (id: string) => { setPlannedState((prev) => ({ ...prev, [id]: { ...prev[id], is_skipped: !prev[id].is_skipped } })) }
-
+  const handlePriceChange = (id: string, price: string) =>
+    setPlannedState((prev) => ({
+      ...prev,
+      [id]: { ...prev[id], actual_price: price },
+    }));
+  const handleToggleSkip = (id: string) =>
+    setPlannedState((prev) => ({
+      ...prev,
+      [id]: { ...prev[id], is_skipped: !prev[id].is_skipped },
+    }));
   const handleAddUnplannedSubmit = (e: React.FormEvent) => {
-    e.preventDefault(); if (!unplannedName.trim()) return
-    setUnplannedItems((prev) => [...prev, { _key: crypto.randomUUID(), item_name: unplannedName.trim(), category: unplannedCategory.trim() || 'General', qty: Number(unplannedQty) || 1, unit: unplannedUnit.trim() || 'pcs', actual_price: unplannedPrice.trim() || '0' }])
-    setIsAddUnplannedOpen(false); setUnplannedName(''); setUnplannedQty('1'); setUnplannedUnit('pcs'); setUnplannedPrice('0')
-  }
+    e.preventDefault();
+    if (!unplannedName.trim()) return;
+    setUnplannedItems((prev) => [
+      ...prev,
+      {
+        _key: crypto.randomUUID(),
+        item_name: unplannedName.trim(),
+        category: unplannedCategory.trim() || "General",
+        qty: Number(unplannedQty) || 1,
+        unit: unplannedUnit.trim() || "pcs",
+        actual_price: unplannedPrice.trim() || "0",
+      },
+    ]);
+    setIsAddUnplannedOpen(false);
+    setUnplannedName("");
+    setUnplannedQty("1");
+    setUnplannedUnit("pcs");
+    setUnplannedPrice("0");
+  };
 
-  const totalEstimated = plan.items?.reduce((acc: number, item: PlanItem) => { if (plannedState[item.id]?.is_skipped) return acc; return acc + Number(item.qty) * Number(item.estimated_price) }, 0) ?? 0
-  const plannedActualTotal = plan.items?.reduce((acc: number, item: PlanItem) => { const state = plannedState[item.id]; if (state?.is_skipped) return acc; return acc + Number(item.qty) * (Number(state?.actual_price) || 0) }, 0) ?? 0
-  const unplannedActualTotal = unplannedItems.reduce((acc: number, item: UnplannedItemWithKey) => acc + Number(item.qty) * Number(item.actual_price), 0)
-  const grandTotalActual = plannedActualTotal + unplannedActualTotal
-  const variance = grandTotalActual - totalEstimated
+  const totalEstimated =
+    plan.items?.reduce(
+      (acc, item) =>
+        plannedState[item.id]?.is_skipped
+          ? acc
+          : acc + Number(item.qty) * Number(item.estimated_price),
+      0,
+    ) ?? 0;
+  const plannedActualTotal =
+    plan.items?.reduce((acc, item) => {
+      const state = plannedState[item.id];
+      return state?.is_skipped
+        ? acc
+        : acc + Number(item.qty) * (Number(state?.actual_price) || 0);
+    }, 0) ?? 0;
+  const unplannedActualTotal = unplannedItems.reduce(
+    (acc, item) => acc + Number(item.qty) * Number(item.actual_price),
+    0,
+  );
+  const grandTotalActual = plannedActualTotal + unplannedActualTotal;
+  const variance = grandTotalActual - totalEstimated;
+
   const handleSubmitReconciliation = async () => {
-    setSubmitting(true); setError(null)
-    const plannedPayload: PlannedItemReconcile[] = Object.entries(plannedState).map(([id, val]) => ({ id, actual_price: val.actual_price.trim() || '0', is_skipped: val.is_skipped }))
-    const prog = ReconciliationService.reconcile(plan.id, plannedPayload, unplannedItems.map(({ _key, ...rest }) => rest)).pipe(
+    setSubmitting(true);
+    setError(null);
+    const plannedPayload: PlannedItemReconcile[] = Object.entries(
+      plannedState,
+    ).map(([id, val]) => ({
+      id,
+      actual_price: val.actual_price.trim() || "0",
+      is_skipped: val.is_skipped,
+    }));
+    const prog = ReconciliationService.reconcile(
+      plan.id,
+      plannedPayload,
+      unplannedItems.map(({ _key, ...rest }) => rest),
+    ).pipe(
       Effect.map((updatedPlan) => onSuccess(updatedPlan)),
-      Effect.catchAll((err) => { const message = err instanceof Error ? err.message : t('reconciliation.errorSave'); setError(message); return Effect.succeed(undefined) })
-    )
-    await Effect.runPromise(prog); setSubmitting(false)
-  }
-
-  const card: React.CSSProperties = { borderRadius: 'var(--radius-card)', background: 'var(--color-paper)', padding: '1.5rem', border: '1.5px solid var(--color-rule)', display: 'flex', flexDirection: 'column', gap: '1rem', boxShadow: '0 2px 8px -4px oklch(20% 0.012 250 / 0.06)' }
-  const mono: React.CSSProperties = { fontFamily: 'var(--font-mono)', fontVariantNumeric: 'tabular-nums' }
+      Effect.catchAll((err) => {
+        setError(
+          err instanceof Error ? err.message : t("reconciliation.errorSave"),
+        );
+        return Effect.succeed(undefined);
+      }),
+    );
+    await Effect.runPromise(prog);
+    setSubmitting(false);
+  };
 
   return (
-    <div style={{ maxWidth: '40rem', margin: '0 auto', padding: '1.5rem 1rem', display: 'flex', flexDirection: 'column', gap: '1.5rem', paddingBottom: '8rem' }}>
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.5rem' }}>
-        <button type="button" onClick={onBack} style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', fontSize: 'var(--text-xs)', fontWeight: 600, color: 'var(--color-ink-3)', background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'var(--font-body)', transition: 'color 180ms' }}
-          onMouseEnter={(e) => { e.currentTarget.style.color = 'var(--color-ink)' }} onMouseLeave={(e) => { e.currentTarget.style.color = 'var(--color-ink-3)' }}>
-          <ArrowLeft style={{ height: '1rem', width: '1rem' }} /><span>{t('reconciliation.back')}</span>
+    <div className="reconciliation-page">
+      <header className="reconciliation-header">
+        <button type="button" onClick={onBack} className="reconciliation-back">
+          <ArrowLeft aria-hidden="true" />
+          <span>{t("reconciliation.back")}</span>
         </button>
-        <span style={{ fontSize: 'var(--text-xs)', color: 'var(--color-ink-3)', fontFamily: 'var(--font-body)' }}>{t('reconciliation.headerLabel')}</span>
-      </div>
+      </header>
 
-      <div style={card}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-          <div style={{ display: 'flex', height: '2.75rem', width: '2.75rem', alignItems: 'center', justifyContent: 'center', borderRadius: '14px', background: 'var(--color-accent)', color: 'var(--color-ink)', boxShadow: '0 3px 0 0 var(--color-accent-deep)' }}>
-            <Receipt style={{ height: '1.25rem', width: '1.25rem' }} />
-          </div>
+      <section className="reconciliation-intro">
+        <div className="reconciliation-intro__title">
           <div>
-            <h1 style={{ fontSize: 'var(--text-lg)', fontWeight: 700, color: 'var(--color-ink)', fontFamily: 'var(--font-display)' }}>{t('reconciliation.title')}</h1>
-            <p style={{ fontSize: 'var(--text-xs)', color: 'var(--color-ink-3)', fontFamily: 'var(--font-body)' }}>{plan.title}</p>
+            <h1>{t("reconciliation.title")}</h1>
+            <p>{plan.title}</p>
           </div>
         </div>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(0, 1fr))', gap: '0.75rem', paddingTop: '0.5rem' }}>
-          <div style={{ borderRadius: '14px', background: 'var(--color-paper-2)', padding: '1rem', border: '1.5px solid var(--color-rule)' }}>
-            <div style={{ fontSize: '0.6875rem', color: 'var(--color-ink-3)', fontWeight: 500, fontFamily: 'var(--font-body)' }}>{t('reconciliation.initialEstimate')}</div>
-            <div style={{ fontSize: 'var(--text-base)', fontWeight: 700, color: 'var(--color-ink)', ...mono }}>{formatCurrency(totalEstimated)}</div>
+        <div
+          className="reconciliation-summary"
+          aria-label={t("reconciliation.title")}
+        >
+          <div className="reconciliation-stat">
+            <span>{t("reconciliation.initialEstimate")}</span>
+            <strong>{formatCurrency(totalEstimated)}</strong>
           </div>
-          <div style={{ borderRadius: '14px', background: 'color-mix(in oklch, var(--color-accent) 12%, transparent)', padding: '1rem', border: '1.5px solid color-mix(in oklch, var(--color-accent) 25%, transparent)' }}>
-            <div style={{ fontSize: '0.6875rem', color: 'var(--color-accent-deep)', fontWeight: 500, fontFamily: 'var(--font-body)' }}>{t('reconciliation.actualTotal')}</div>
-            <div style={{ fontSize: 'var(--text-lg)', fontWeight: 800, color: 'var(--color-accent-deep)', ...mono }}>{formatCurrency(grandTotalActual)}</div>
+          <div className="reconciliation-stat reconciliation-stat--actual">
+            <span>{t("reconciliation.actualTotal")}</span>
+            <strong>{formatCurrency(grandTotalActual)}</strong>
           </div>
-          <div style={{ borderRadius: '14px', padding: '1rem', border: `1.5px solid ${variance > 0 ? 'oklch(68% 0.24 18 / 0.25)' : 'oklch(80% 0.16 150 / 0.25)'}`, background: variance > 0 ? 'oklch(68% 0.24 18 / 0.08)' : 'oklch(80% 0.16 150 / 0.08)' }}>
-            <div style={{ fontSize: '0.6875rem', fontWeight: 500, fontFamily: 'var(--font-body)', color: variance > 0 ? 'var(--color-accent-3)' : 'var(--color-mint)' }}>{t('reconciliation.variance')}</div>
-            <div style={{ fontSize: 'var(--text-base)', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '0.25rem', color: variance > 0 ? 'var(--color-accent-3)' : 'var(--color-mint)', ...mono }}>
-              {variance > 0 ? <><TrendingUp style={{ height: '1rem', width: '1rem' }} /><span>+{formatCurrency(variance)}</span></> : <><TrendingDown style={{ height: '1rem', width: '1rem' }} /><span>-{formatCurrency(Math.abs(variance))}</span></>}
+          <div
+            className={`reconciliation-stat ${variance > 0 ? "reconciliation-stat--over" : "reconciliation-stat--under"}`}
+          >
+            <span>{t("reconciliation.variance")}</span>
+            <strong>
+              {variance > 0 ? (
+                <>
+                  <TrendingUp aria-hidden="true" />+{formatCurrency(variance)}
+                </>
+              ) : (
+                <>
+                  <TrendingDown aria-hidden="true" />-
+                  {formatCurrency(Math.abs(variance))}
+                </>
+              )}
+            </strong>
+          </div>
+        </div>
+      </section>
+
+      {error && (
+        <div className="reconciliation-error" role="alert">
+          {error}
+        </div>
+      )}
+
+      <div className="reconciliation-layout">
+        <main className="reconciliation-main">
+          <div className="reconciliation-section-heading">
+            <div>
+              <h2>{t("reconciliation.plannedItems")}</h2>
             </div>
+            <span>{plan.items?.length ?? 0}</span>
           </div>
-        </div>
-      </div>
-
-      {error && <div style={{ borderRadius: 'var(--radius-input)', background: 'oklch(68% 0.24 18 / 0.08)', padding: '0.75rem', fontSize: 'var(--text-xs)', color: 'var(--color-accent-3)', border: '1.5px solid oklch(68% 0.24 18 / 0.2)', fontFamily: 'var(--font-body)' }}>{error}</div>}
-
-      {/* Planned Items */}
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-        <div style={{ fontSize: 'var(--text-xs)', fontWeight: 700, color: 'var(--color-ink-3)', textTransform: 'uppercase', letterSpacing: '0.06em', padding: '0 0.25rem', fontFamily: 'var(--font-mono)' }}>{t('reconciliation.plannedItems')} ({plan.items?.length ?? 0})</div>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-          {plan.items?.map((item: PlanItem) => {
-            const isSkipped = plannedState[item.id]?.is_skipped
-            const actualPrice = Number(plannedState[item.id]?.actual_price) || 0
-            const estimatedSubtotal = Number(item.qty) * Number(item.estimated_price)
-            const actualSubtotal = Number(item.qty) * actualPrice
-            const diff = actualSubtotal - estimatedSubtotal
-            return (
-              <div key={item.id} style={{ borderRadius: '14px', padding: '1rem', transition: 'all 180ms var(--ease-out)', border: '1.5px solid var(--color-rule)', background: isSkipped ? 'var(--color-paper-2)' : 'var(--color-paper)', opacity: isSkipped ? 0.5 : 1 }}>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-                  <div style={{ flex: '1 1 auto' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                      <span style={{ fontSize: 'var(--text-sm)', fontWeight: 700, color: isSkipped ? 'var(--color-ink-3)' : 'var(--color-ink)', fontFamily: 'var(--font-body)', textDecoration: isSkipped ? 'line-through' : 'none' }}>{item.item_name}</span>
-                      {isSkipped && <span style={{ borderRadius: '6px', background: 'var(--color-paper-3)', padding: '0.125rem 0.375rem', fontSize: '0.625rem', fontWeight: 600, color: 'var(--color-ink-3)', fontFamily: 'var(--font-body)' }}>{t('reconciliation.skip')}</span>}
+          <div className="reconciliation-list">
+            {plan.items?.map((item: PlanItem) => {
+              const isSkipped = plannedState[item.id]?.is_skipped;
+              const actualPrice =
+                Number(plannedState[item.id]?.actual_price) || 0;
+              const estimatedSubtotal =
+                Number(item.qty) * Number(item.estimated_price);
+              const actualSubtotal = Number(item.qty) * actualPrice;
+              const diff = actualSubtotal - estimatedSubtotal;
+              return (
+                <article
+                  key={item.id}
+                  className={`reconciliation-item ${isSkipped ? "is-skipped" : ""}`}
+                >
+                  <div className="reconciliation-item__details">
+                    <div className="reconciliation-item__name">
+                      {item.item_name}
+                      {isSkipped && <span>{t("reconciliation.skip")}</span>}
                     </div>
-                    <div style={{ fontSize: 'var(--text-xs)', color: 'var(--color-ink-3)', marginTop: '0.125rem', fontFamily: 'var(--font-mono)', fontVariantNumeric: 'tabular-nums' }}>{Number(item.qty)} {item.unit} | Est: {formatCurrency(Number(item.estimated_price))}</div>
+                    <p>
+                      {Number(item.qty)} {item.unit} ·{" "}
+                      {t("reconciliation.initialEstimate")}:{" "}
+                      {formatCurrency(Number(item.estimated_price))}
+                    </p>
                   </div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>
+                  <div className="reconciliation-item__controls">
                     {!isSkipped && (
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                        <div style={{ width: '8rem' }}><Input type="number" min="0" step="any" value={actualPrice} onChange={(e: React.ChangeEvent<HTMLInputElement>) => handlePriceChange(item.id, e.target.value)} placeholder={t('reconciliation.actualPricePlaceholder')} /></div>
-                        <div style={{ textAlign: 'right', minWidth: '4.5rem' }}>
-                          <div style={{ fontSize: 'var(--text-xs)', fontWeight: 800, color: 'var(--color-ink)', ...mono }}>{formatCurrency(actualSubtotal)}</div>
-                          {diff !== 0 && <div style={{ fontSize: '0.625rem', fontWeight: 600, color: diff > 0 ? 'var(--color-accent-3)' : 'var(--color-mint)', fontFamily: 'var(--font-mono)' }}>{diff > 0 ? `+${formatCurrency(diff)}` : `-${formatCurrency(Math.abs(diff))}`}</div>}
+                      <div className="reconciliation-price">
+                        <Input
+                          aria-label={`${item.item_name} ${t("reconciliation.actualPricePlaceholder")}`}
+                          type="number"
+                          min="0"
+                          step="any"
+                          value={plannedState[item.id]?.actual_price ?? ""}
+                          onChange={(e) =>
+                            handlePriceChange(item.id, e.target.value)
+                          }
+                          placeholder={t(
+                            "reconciliation.actualPricePlaceholder",
+                          )}
+                        />
+                        <div>
+                          <strong>{formatCurrency(actualSubtotal)}</strong>
+                          {diff !== 0 && (
+                            <small
+                              className={diff > 0 ? "is-over" : "is-under"}
+                            >
+                              {diff > 0 ? "+" : "-"}
+                              {formatCurrency(Math.abs(diff))}
+                            </small>
+                          )}
                         </div>
                       </div>
                     )}
-                    <button type="button" onClick={() => handleToggleSkip(item.id)} style={{ padding: '0.375rem 0.625rem', borderRadius: 'var(--radius-input)', fontSize: 'var(--text-xs)', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '0.25rem', border: '1.5px solid var(--color-rule)', background: isSkipped ? 'var(--color-paper-3)' : 'var(--color-paper-2)', color: isSkipped ? 'var(--color-ink)' : 'var(--color-ink-3)', cursor: 'pointer', fontFamily: 'var(--font-body)', transition: 'all 180ms var(--ease-out)' }}>
-                      <MinusCircle style={{ height: '0.875rem', width: '0.875rem' }} /><span>{isSkipped ? t('reconciliation.activate') : t('reconciliation.skip')}</span>
+                    <button
+                      type="button"
+                      onClick={() => handleToggleSkip(item.id)}
+                      className="reconciliation-skip"
+                    >
+                      <MinusCircle aria-hidden="true" />
+                      <span>
+                        {isSkipped
+                          ? t("reconciliation.activate")
+                          : t("reconciliation.skip")}
+                      </span>
                     </button>
                   </div>
-                </div>
-              </div>
-            )
-          })}
-        </div>
-      </div>
-
-      {/* Unplanned Items */}
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', paddingTop: '0.5rem' }}>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <div style={{ fontSize: 'var(--text-xs)', fontWeight: 700, color: 'var(--color-ink-3)', textTransform: 'uppercase', letterSpacing: '0.06em', padding: '0 0.25rem', fontFamily: 'var(--font-mono)' }}>{t('reconciliation.unplannedItems')} ({unplannedItems.length})</div>
-          <Button size="sm" variant="outline" onClick={() => setIsAddUnplannedOpen(true)}><Plus style={{ height: '0.875rem', width: '0.875rem' }} /><span>{t('common.addItem')}</span></Button>
-        </div>
-        {unplannedItems.length > 0 && (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-            {unplannedItems.map((u) => (
-              <div key={u._key} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderRadius: '14px', background: 'color-mix(in oklch, var(--color-accent) 10%, transparent)', padding: '1rem', border: '1.5px solid color-mix(in oklch, var(--color-accent) 25%, transparent)' }}>
-                <div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                    <span style={{ fontSize: 'var(--text-sm)', fontWeight: 700, color: 'var(--color-accent-deep)', fontFamily: 'var(--font-body)' }}>{u.item_name}</span>
-                    <span style={{ borderRadius: '6px', background: 'color-mix(in oklch, var(--color-accent) 30%, transparent)', padding: '0.125rem 0.375rem', fontSize: '0.625rem', fontWeight: 700, color: 'var(--color-accent-deep)', fontFamily: 'var(--font-body)' }}>{t('common.unplanned')}</span>
-                  </div>
-                  <div style={{ fontSize: 'var(--text-xs)', color: 'var(--color-ink-3)', marginTop: '0.125rem', fontFamily: 'var(--font-mono)', fontVariantNumeric: 'tabular-nums' }}>{u.qty} {u.unit} × {formatCurrency(Number(u.actual_price))}</div>
-                </div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                  <div style={{ textAlign: 'right' }}>
-                    <div style={{ fontSize: 'var(--text-sm)', fontWeight: 800, color: 'var(--color-accent-deep)', ...mono }}>{formatCurrency(Number(u.qty) * Number(u.actual_price))}</div>
-                  </div>
-                  <button type="button" onClick={() => setUnplannedItems((prev) => prev.filter((item) => item._key !== u._key))} style={{ fontSize: 'var(--text-xs)', fontWeight: 600, color: 'var(--color-accent-3)', background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'var(--font-body)' }}>{t('common.delete')}</button>
-                </div>
-              </div>
-            ))}
+                </article>
+              );
+            })}
           </div>
-        )}
+        </main>
+
+        <aside className="reconciliation-aside">
+          <div className="reconciliation-section-heading reconciliation-aside__heading">
+            <div>
+              <h2>{t("reconciliation.unplannedItems")}</h2>
+            </div>
+            <span>{unplannedItems.length}</span>
+            <Button
+              className="reconciliation-aside__add"
+              size="sm"
+              variant="outline"
+              aria-label={t("common.addItem")}
+              onClick={() => setIsAddUnplannedOpen(true)}
+            >
+              <Plus aria-hidden="true" />
+            </Button>
+          </div>
+          {unplannedItems.length > 0 && (
+            <div className="reconciliation-unplanned-list">
+              {unplannedItems.map((u) => (
+                <article key={u._key} className="reconciliation-unplanned">
+                  <div>
+                    <strong>{u.item_name}</strong>
+                    <span>{t("common.unplanned")}</span>
+                    <p>
+                      {u.qty} {u.unit} ×{" "}
+                      {formatCurrency(Number(u.actual_price))}
+                    </p>
+                  </div>
+                  <div className="reconciliation-unplanned__aside">
+                    <strong>
+                      {formatCurrency(Number(u.qty) * Number(u.actual_price))}
+                    </strong>
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setUnplannedItems((prev) =>
+                          prev.filter((item) => item._key !== u._key),
+                        )
+                      }
+                      aria-label={`${t("common.delete")} ${u.item_name}`}
+                    >
+                      <Trash2 aria-hidden="true" />
+                    </button>
+                  </div>
+                </article>
+              ))}
+            </div>
+          )}
+        </aside>
       </div>
 
-      {/* Floating Action Bar */}
-      <div style={{ position: 'fixed', bottom: 0, left: 0, right: 0, padding: '1rem', paddingBottom: 'calc(1rem + env(safe-area-inset-bottom, 0px))', background: 'var(--color-paper-glass)', backdropFilter: 'blur(12px)', borderTop: '1.5px solid var(--color-rule)', zIndex: 'var(--z-sticky)' }}>
-        <div style={{ maxWidth: '40rem', margin: '0 auto', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '1rem' }}>
+      <div className="reconciliation-action-bar">
+        <div>
+          <span>{t("reconciliation.finalTotal")}</span>
+          <strong>{formatCurrency(grandTotalActual)}</strong>
+        </div>
+        <div>
+          <Button variant="outline" onClick={onBack}>
+            {t("reconciliation.cancel")}
+          </Button>
+          <Button onClick={handleSubmitReconciliation} disabled={submitting}>
+            <Check aria-hidden="true" />
+            <span>
+              {submitting
+                ? t("reconciliation.saving")
+                : t("reconciliation.saveButton")}
+            </span>
+          </Button>
+        </div>
+      </div>
+
+      <Modal
+        open={isAddUnplannedOpen}
+        onOpenChange={setIsAddUnplannedOpen}
+        title={t("reconciliation.modalTitle")}
+        description={t("reconciliation.modalDesc")}
+      >
+        <form
+          onSubmit={handleAddUnplannedSubmit}
+          className="reconciliation-modal-form"
+        >
           <div>
-            <div style={{ fontSize: 'var(--text-xs)', color: 'var(--color-ink-3)', fontFamily: 'var(--font-body)' }}>{t('reconciliation.finalTotal')}</div>
-            <div style={{ fontSize: 'var(--text-lg)', fontWeight: 800, color: 'var(--color-ink)', ...mono }}>{formatCurrency(grandTotalActual)}</div>
+            <label>{t("common.itemName")}</label>
+            <ItemAutocomplete
+              value={unplannedName}
+              onChange={(name: string, master?: MasterItem) => {
+                setUnplannedName(name);
+                if (master) {
+                  setUnplannedPrice(String(master.latest_price));
+                  if (master.category) setUnplannedCategory(master.category);
+                }
+              }}
+            />
           </div>
-          <div style={{ display: 'flex', gap: '0.5rem' }}>
-            <Button variant="outline" onClick={onBack}>{t('reconciliation.cancel')}</Button>
-            <Button onClick={handleSubmitReconciliation} disabled={submitting}><Check style={{ height: '1rem', width: '1rem' }} /><span>{submitting ? t('reconciliation.saving') : t('reconciliation.saveButton')}</span></Button>
+          <div className="reconciliation-modal-form__row">
+            <Input
+              label={t("common.qty")}
+              type="number"
+              min="0.1"
+              step="any"
+              value={unplannedQty}
+              onChange={(e) => setUnplannedQty(e.target.value)}
+              required
+            />
+            <Input
+              label={t("common.unit")}
+              placeholder={t("common.unitPlaceholder")}
+              value={unplannedUnit}
+              onChange={(e) => setUnplannedUnit(e.target.value)}
+              required
+            />
           </div>
-        </div>
-      </div>
-
-      <Modal open={isAddUnplannedOpen} onOpenChange={setIsAddUnplannedOpen} title={t('reconciliation.modalTitle')} description={t('reconciliation.modalDesc')}>
-        <form onSubmit={handleAddUnplannedSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.375rem' }}>
-            <label style={{ fontSize: 'var(--text-xs)', fontWeight: 600, color: 'var(--color-ink-2)', fontFamily: 'var(--font-body)' }}>{t('common.itemName')}</label>
-            <ItemAutocomplete value={unplannedName} onChange={(name: string, master?: MasterItem) => { setUnplannedName(name); if (master) { setUnplannedPrice(String(master.latest_price)); if (master.category) setUnplannedCategory(master.category) } }} />
-          </div>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
-            <Input label={t('common.qty')} type="number" min="0.1" step="any" value={unplannedQty} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setUnplannedQty(e.target.value)} required />
-            <Input label={t('common.unit')} placeholder={t('common.unitPlaceholder')} value={unplannedUnit} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setUnplannedUnit(e.target.value)} required />
-          </div>
-          <Input label={t('reconciliation.actualPriceLabel')} type="number" min="0" step="any" value={unplannedPrice} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setUnplannedPrice(e.target.value)} required />
-          <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.5rem', paddingTop: '0.5rem' }}>
-            <Button type="button" variant="outline" size="sm" onClick={() => setIsAddUnplannedOpen(false)}>{t('reconciliation.cancel')}</Button>
-            <Button type="submit" size="sm">{t('reconciliation.addButton')}</Button>
+          <Input
+            label={t("reconciliation.actualPriceLabel")}
+            type="number"
+            min="0"
+            step="any"
+            value={unplannedPrice}
+            onChange={(e) => setUnplannedPrice(e.target.value)}
+            required
+          />
+          <div className="reconciliation-modal-form__actions">
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={() => setIsAddUnplannedOpen(false)}
+            >
+              {t("reconciliation.cancel")}
+            </Button>
+            <Button type="submit" size="sm">
+              {t("reconciliation.addButton")}
+            </Button>
           </div>
         </form>
       </Modal>
     </div>
-  )
-}
+  );
+};
