@@ -1764,9 +1764,26 @@
   }
 
   .plan-detail-page {
-    height: calc(100dvh - 6.5rem);
+    height: auto;
+    min-height: calc(100dvh - 6.5rem);
     padding-block-start: calc(var(--space-sm) + env(safe-area-inset-top, 0px));
     padding-block-end: var(--space-lg);
+    overflow: visible;
+  }
+
+  /* Let the document own scrolling on small screens. Nested flex scrollers can
+     collapse to zero height on iOS when the page itself has a fixed viewport height. */
+  .plan-detail-page__items {
+    flex: none;
+  }
+
+  .plan-detail-page__items-list,
+  .plan-detail-empty {
+    flex: none;
+  }
+
+  .plan-detail-page__items-list {
+    overflow: visible;
   }
 
   .plan-detail-skeleton {
